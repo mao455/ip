@@ -4,6 +4,8 @@ import java.util.Scanner;
  * The main entry point for the Bo chatbot.
  */
 public class Bo {
+    private static final int MAX_TASKS = 100;
+
     public static void main(String[] args) {
         String banner = " ____        \n"
                 + "| __ )  ___  \n"
@@ -19,6 +21,9 @@ public class Bo {
         System.out.println(separator);
 
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
+
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
 
@@ -30,7 +35,17 @@ public class Bo {
             }
 
             System.out.println(separator);
-            System.out.println(" " + command);
+
+            if (command.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = command;
+                taskCount++;
+                System.out.println(" added: " + command);
+            }
+
             System.out.println(separator);
         }
     }
