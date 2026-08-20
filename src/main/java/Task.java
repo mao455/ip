@@ -38,12 +38,24 @@ public class Task {
     }
 
     /**
+     * Returns the single-letter type icon shown before this task.
+     *
+     * @return the task type icon
+     */
+    public String getTypeIcon() {
+        return "";
+    }
+
+    /**
      * Returns the task in the format used by Bo's task list.
      *
-     * @return the status icon followed by the task description
+     * @return the type icon, status icon, and task description
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        if (getTypeIcon().isEmpty()) {
+            return "[" + getStatusIcon() + "] " + description;
+        }
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
     }
 }
