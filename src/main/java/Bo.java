@@ -70,6 +70,9 @@ public class Bo {
             listTasks(tasks, taskCount);
             return taskCount;
         }
+        if (commandName.equals("delete")) {
+            return deleteTask(command, tasks, taskCount);
+        }
         if (commandName.equals("mark")) {
             markTask(command, tasks, taskCount);
             return taskCount;
@@ -108,6 +111,47 @@ public class Bo {
         for (int i = 0; i < taskCount; i++) {
             System.out.println(" " + (i + 1) + "." + tasks[i]);
         }
+    }
+
+    /**
+     * Deletes the task at the index specified by a {@code delete} command.
+     * Later tasks are shifted left so that task numbers remain consecutive.
+     *
+     * @param command the complete command entered by the user
+     * @param tasks the tasks in the list
+     * @param taskCount the number of tasks currently stored
+     * @return the updated number of tasks
+     * @throws BoException if the command does not contain a valid task number
+     */
+    private static int deleteTask(String command, Task[] tasks, int taskCount) throws BoException {
+        String[] commandParts = command.split("\\s+");
+        if (commandParts.length != 2) {
+            throw new BoException("Please use delete followed by one task number, e.g. delete 1.");
+        }
+
+        final int taskIndex;
+        try {
+            taskIndex = Integer.parseInt(commandParts[1]) - 1;
+        } catch (NumberFormatException exception) {
+            throw new BoException("The task number must be a whole number.");
+        }
+
+        if (taskIndex < 0 || taskIndex >= taskCount) {
+            throw new BoException("I couldn't find a task with that number.");
+        }
+
+        Task deletedTask = tasks[taskIndex];
+        int tasksToShift = taskCount - taskIndex - 1;
+        if (tasksToShift > 0) {
+            System.arraycopy(tasks, taskIndex + 1, tasks, taskIndex, tasksToShift);
+        }
+        tasks[taskCount - 1] = null;
+        int updatedTaskCount = taskCount - 1;
+
+        System.out.println(" Noted. I've removed this task:");
+        System.out.println("   " + deletedTask);
+        System.out.println(" Now you have " + updatedTaskCount + " tasks in the list.");
+        return updatedTaskCount;
     }
 
     /**
