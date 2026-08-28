@@ -13,6 +13,17 @@ Read and apply that skill when creating, editing, reviewing, or refactoring Java
 includes naming, layout, imports, visibility, variable scope, braces, line length, comments,
 and Javadoc. Preserve behavior and public APIs when making style-only fixes.
 
+## Mandatory Git standard
+
+For every future commit or commit-message proposal in this repository, follow the
+project-specific skill at `.codex/skills/seedu-git-standard/SKILL.md`. It is based on the
+SE-EDU Git conventions:
+https://se-education.org/guides/conventions/git.html
+
+Read and apply that skill before preparing, reviewing, or proposing a commit. Commit subjects
+must be imperative, capitalized, concise, and free of a trailing period; non-trivial commits
+must include a focused body explaining what changed and why, wrapped at 72 characters. Use
+meaningful kebab-case branch names. Do not commit or push unless explicitly asked.
 
 # Default user context
 
