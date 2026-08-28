@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -29,7 +30,7 @@ public class Bo {
 
         Scanner scanner = new Scanner(System.in);
         Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        int taskCount = loadTasks(tasks);
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().strip();
@@ -48,6 +49,34 @@ public class Bo {
                 System.out.println(" OOPS!!! " + exception.getMessage());
             }
             System.out.println(SEPARATOR);
+        }
+    }
+
+    /**
+     * Loads the tasks saved by an earlier Bo session.
+     *
+     * <p>Bo starts with an empty list when no file exists or when the file
+     * cannot be read. In the latter case, a warning is shown so the user knows
+     * that the saved data was not available.
+     *
+     * @param tasks the array into which loaded tasks are placed
+     * @return the number of tasks loaded
+     */
+    private static int loadTasks(Task[] tasks) {
+        try {
+            Storage.LoadResult result = Storage.loadWithReport(tasks);
+            if (result.getInvalidLineCount() > 0) {
+                System.out.println(" Warning: I skipped " + result.getInvalidLineCount()
+                        + " invalid task line(s) in the saved file.");
+            }
+            if (result.getExcessTaskCount() > 0) {
+                System.out.println(" Warning: I could only load the first " + MAX_TASKS
+                        + " tasks from the saved file.");
+            }
+            return result.getTaskCount();
+        } catch (IOException | IllegalArgumentException | SecurityException exception) {
+            System.out.println(" Warning: I couldn't load your tasks from disk.");
+            return 0;
         }
     }
 
@@ -91,6 +120,7 @@ public class Bo {
 
             tasks[taskCount] = task;
             taskCount++;
+            saveTasks(tasks, taskCount);
             System.out.println(" Got it. I've added this task:");
             System.out.println("   " + task);
             System.out.println(" Now you have " + taskCount + " tasks in the list.");
@@ -147,6 +177,7 @@ public class Bo {
         }
         tasks[taskCount - 1] = null;
         int updatedTaskCount = taskCount - 1;
+        saveTasks(tasks, updatedTaskCount);
 
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + deletedTask);
@@ -248,6 +279,7 @@ public class Bo {
             }
 
             tasks[taskIndex].markAsDone();
+            saveTasks(tasks, taskCount);
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   " + tasks[taskIndex]);
         } catch (NumberFormatException exception) {
@@ -275,10 +307,28 @@ public class Bo {
             }
 
             tasks[taskIndex].unmarkAsDone();
+            saveTasks(tasks, taskCount);
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   " + tasks[taskIndex]);
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
+        }
+    }
+
+    /**
+     * Saves the current task list after a successful mutation.
+     *
+     * <p>The in-memory operation remains successful if the file system is
+     * unavailable, but Bo reports the persistence problem to the user.
+     *
+     * @param tasks the tasks in the list
+     * @param taskCount the number of tasks currently stored
+     */
+    private static void saveTasks(Task[] tasks, int taskCount) {
+        try {
+            Storage.save(tasks, taskCount);
+        } catch (IOException | IllegalArgumentException | SecurityException exception) {
+            System.out.println(" Warning: I couldn't save your tasks to disk.");
         }
     }
 }
