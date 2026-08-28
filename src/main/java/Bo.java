@@ -1,51 +1,35 @@
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * The main entry point for the Bo chatbot.
  */
 public class Bo {
-    /** Line used to separate Bo's responses. */
-    private static final String SEPARATOR = "____________________________________________________________";
-
     /**
      * Starts Bo and processes commands from standard input until {@code bye}.
      *
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        String banner = " ____        \n"
-                + "| __ )  ___  \n"
-                + "|  _ \\ / _ \\ \n"
-                + "| |_) | (_) |\n"
-                + "|____/ \\___/\n";
-        System.out.println(SEPARATOR);
-        System.out.print(banner);
-        System.out.println("Hello! I'm Bo.");
-        System.out.println("What can I do for you?");
-        System.out.println(SEPARATOR);
-
-        Scanner scanner = new Scanner(System.in);
+        Ui ui = new Ui();
+        ui.showWelcome();
         Task[] loadedTasks = new Task[TaskList.DEFAULT_CAPACITY];
-        TaskList taskList = new TaskList(loadedTasks, loadTasks(loadedTasks));
+        TaskList taskList = new TaskList(loadedTasks, loadTasks(loadedTasks, ui));
 
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().strip();
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
 
             if (command.equals("bye")) {
-                System.out.println(SEPARATOR);
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println(SEPARATOR);
+                ui.showGoodbye();
                 break;
             }
 
-            System.out.println(SEPARATOR);
+            ui.showSeparator();
             try {
-                processCommand(command, taskList);
+                processCommand(command, taskList, ui);
             } catch (BoException exception) {
-                System.out.println(" OOPS!!! " + exception.getMessage());
+                ui.showError(exception.getMessage());
             }
-            System.out.println(SEPARATOR);
+            ui.showSeparator();
         }
     }
 
@@ -57,22 +41,16 @@ public class Bo {
      * that the saved data was not available.
      *
      * @param tasks the array into which loaded tasks are placed
+     * @param ui the UI used to show loading warnings
      * @return the number of tasks loaded
      */
-    private static int loadTasks(Task[] tasks) {
+    private static int loadTasks(Task[] tasks, Ui ui) {
         try {
             Storage.LoadResult result = Storage.loadWithReport(tasks);
-            if (result.getInvalidLineCount() > 0) {
-                System.out.println(" Warning: I skipped " + result.getInvalidLineCount()
-                        + " invalid task line(s) in the saved file.");
-            }
-            if (result.getExcessTaskCount() > 0) {
-                System.out.println(" Warning: I could only load the first " + tasks.length
-                        + " tasks from the saved file.");
-            }
+            ui.showLoadingWarnings(result);
             return result.getTaskCount();
         } catch (IOException | IllegalArgumentException | SecurityException exception) {
-            System.out.println(" Warning: I couldn't load your tasks from disk.");
+            ui.showLoadingError();
             return 0;
         }
     }
@@ -84,55 +62,41 @@ public class Bo {
      * @param taskList the tasks in the list
      * @throws BoException if the command is invalid
      */
-    private static void processCommand(String command, TaskList taskList) throws BoException {
+    private static void processCommand(String command, TaskList taskList, Ui ui) throws BoException {
         if (command.isEmpty()) {
             throw new BoException("Please enter a command instead of an empty line.");
         }
 
         String commandName = command.split("\\s+", 2)[0];
         if (command.equals("list")) {
-            listTasks(taskList);
+            ui.showTaskList(taskList);
             return;
         }
         if (commandName.equals("delete")) {
-            deleteTask(command, taskList);
+            deleteTask(command, taskList, ui);
             return;
         }
         if (commandName.equals("mark")) {
-            markTask(command, taskList);
+            markTask(command, taskList, ui);
             return;
         }
         if (commandName.equals("unmark")) {
-            unmarkTask(command, taskList);
+            unmarkTask(command, taskList, ui);
             return;
         }
         if (commandName.equals("todo") || commandName.equals("deadline")
                 || commandName.equals("event")) {
             Task task = createTask(command);
             if (!taskList.add(task)) {
-                System.out.println(" The task list is full.");
+                ui.showTaskListFull();
                 return;
             }
-            saveTasks(taskList);
-            System.out.println(" Got it. I've added this task:");
-            System.out.println("   " + task);
-            System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
+            saveTasks(taskList, ui);
+            ui.showTaskAdded(task, taskList.size());
             return;
         }
 
         throw new BoException("I'm sorry, but I don't know what that means :-(");
-    }
-
-    /**
-     * Prints all tasks currently stored by Bo.
-     *
-     * @param taskList the tasks in the list
-     */
-    private static void listTasks(TaskList taskList) {
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < taskList.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + taskList.get(i));
-        }
     }
 
     /**
@@ -141,9 +105,10 @@ public class Bo {
      *
      * @param command the complete command entered by the user
      * @param taskList the tasks in the list
+     * @param ui the UI used to show the result
      * @throws BoException if the command does not contain a valid task number
      */
-    private static void deleteTask(String command, TaskList taskList) throws BoException {
+    private static void deleteTask(String command, TaskList taskList, Ui ui) throws BoException {
         String[] commandParts = command.split("\\s+");
         if (commandParts.length != 2) {
             throw new BoException("Please use delete followed by one task number, e.g. delete 1.");
@@ -161,11 +126,8 @@ public class Bo {
         }
 
         Task deletedTask = taskList.remove(taskIndex);
-        saveTasks(taskList);
-
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + deletedTask);
-        System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
+        saveTasks(taskList, ui);
+        ui.showTaskDeleted(deletedTask, taskList.size());
     }
 
     /**
@@ -248,8 +210,9 @@ public class Bo {
      *
      * @param command the complete command entered by the user
      * @param taskList the tasks in the list
+     * @param ui the UI used to show the result
      */
-    private static void markTask(String command, TaskList taskList) throws BoException {
+    private static void markTask(String command, TaskList taskList, Ui ui) throws BoException {
         String[] commandParts = command.split("\\s+");
         if (commandParts.length != 2) {
             throw new BoException("Please use mark followed by one task number, e.g. mark 1.");
@@ -262,9 +225,8 @@ public class Bo {
             }
 
             taskList.get(taskIndex).markAsDone();
-            saveTasks(taskList);
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + taskList.get(taskIndex));
+            saveTasks(taskList, ui);
+            ui.showTaskMarked(taskList.get(taskIndex));
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
         }
@@ -275,8 +237,9 @@ public class Bo {
      *
      * @param command the complete command entered by the user
      * @param taskList the tasks in the list
+     * @param ui the UI used to show the result
      */
-    private static void unmarkTask(String command, TaskList taskList) throws BoException {
+    private static void unmarkTask(String command, TaskList taskList, Ui ui) throws BoException {
         String[] commandParts = command.split("\\s+");
         if (commandParts.length != 2) {
             throw new BoException("Please use unmark followed by one task number, e.g. unmark 1.");
@@ -289,9 +252,8 @@ public class Bo {
             }
 
             taskList.get(taskIndex).unmarkAsDone();
-            saveTasks(taskList);
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + taskList.get(taskIndex));
+            saveTasks(taskList, ui);
+            ui.showTaskUnmarked(taskList.get(taskIndex));
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
         }
@@ -304,13 +266,14 @@ public class Bo {
      * unavailable, but Bo reports the persistence problem to the user.
      *
      * @param taskList the tasks in the list
+     * @param ui the UI used to show save warnings
      */
-    private static void saveTasks(TaskList taskList) {
+    private static void saveTasks(TaskList taskList, Ui ui) {
         try {
             Task[] tasks = taskList.toArray();
             Storage.save(tasks, tasks.length);
         } catch (IOException | IllegalArgumentException | SecurityException exception) {
-            System.out.println(" Warning: I couldn't save your tasks to disk.");
+            ui.showSavingError();
         }
     }
 }
