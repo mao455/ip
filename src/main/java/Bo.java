@@ -5,9 +5,6 @@ import java.util.Scanner;
  * The main entry point for the Bo chatbot.
  */
 public class Bo {
-    /** Maximum number of tasks Bo can keep in memory for this increment. */
-    private static final int MAX_TASKS = 100;
-
     /** Line used to separate Bo's responses. */
     private static final String SEPARATOR = "____________________________________________________________";
 
@@ -29,8 +26,8 @@ public class Bo {
         System.out.println(SEPARATOR);
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = loadTasks(tasks);
+        Task[] loadedTasks = new Task[TaskList.DEFAULT_CAPACITY];
+        TaskList taskList = new TaskList(loadedTasks, loadTasks(loadedTasks));
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().strip();
@@ -44,7 +41,7 @@ public class Bo {
 
             System.out.println(SEPARATOR);
             try {
-                taskCount = processCommand(command, tasks, taskCount);
+                processCommand(command, taskList);
             } catch (BoException exception) {
                 System.out.println(" OOPS!!! " + exception.getMessage());
             }
@@ -70,7 +67,7 @@ public class Bo {
                         + " invalid task line(s) in the saved file.");
             }
             if (result.getExcessTaskCount() > 0) {
-                System.out.println(" Warning: I could only load the first " + MAX_TASKS
+                System.out.println(" Warning: I could only load the first " + tasks.length
                         + " tasks from the saved file.");
             }
             return result.getTaskCount();
@@ -81,50 +78,46 @@ public class Bo {
     }
 
     /**
-     * Processes one command and returns the resulting number of tasks.
+     * Processes one command using the supplied task list.
      *
      * @param command the complete command entered by the user
-     * @param tasks the tasks in the list
-     * @param taskCount the number of tasks currently stored
-     * @return the updated number of tasks
+     * @param taskList the tasks in the list
      * @throws BoException if the command is invalid
      */
-    private static int processCommand(String command, Task[] tasks, int taskCount) throws BoException {
+    private static void processCommand(String command, TaskList taskList) throws BoException {
         if (command.isEmpty()) {
             throw new BoException("Please enter a command instead of an empty line.");
         }
 
         String commandName = command.split("\\s+", 2)[0];
         if (command.equals("list")) {
-            listTasks(tasks, taskCount);
-            return taskCount;
+            listTasks(taskList);
+            return;
         }
         if (commandName.equals("delete")) {
-            return deleteTask(command, tasks, taskCount);
+            deleteTask(command, taskList);
+            return;
         }
         if (commandName.equals("mark")) {
-            markTask(command, tasks, taskCount);
-            return taskCount;
+            markTask(command, taskList);
+            return;
         }
         if (commandName.equals("unmark")) {
-            unmarkTask(command, tasks, taskCount);
-            return taskCount;
+            unmarkTask(command, taskList);
+            return;
         }
         if (commandName.equals("todo") || commandName.equals("deadline")
                 || commandName.equals("event")) {
             Task task = createTask(command);
-            if (taskCount >= MAX_TASKS) {
+            if (!taskList.add(task)) {
                 System.out.println(" The task list is full.");
-                return taskCount;
+                return;
             }
-
-            tasks[taskCount] = task;
-            taskCount++;
-            saveTasks(tasks, taskCount);
+            saveTasks(taskList);
             System.out.println(" Got it. I've added this task:");
             System.out.println("   " + task);
-            System.out.println(" Now you have " + taskCount + " tasks in the list.");
-            return taskCount;
+            System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
+            return;
         }
 
         throw new BoException("I'm sorry, but I don't know what that means :-(");
@@ -133,13 +126,12 @@ public class Bo {
     /**
      * Prints all tasks currently stored by Bo.
      *
-     * @param tasks the tasks in the list
-     * @param taskCount the number of tasks currently stored
+     * @param taskList the tasks in the list
      */
-    private static void listTasks(Task[] tasks, int taskCount) {
+    private static void listTasks(TaskList taskList) {
         System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println(" " + (i + 1) + "." + tasks[i]);
+        for (int i = 0; i < taskList.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + taskList.get(i));
         }
     }
 
@@ -148,12 +140,10 @@ public class Bo {
      * Later tasks are shifted left so that task numbers remain consecutive.
      *
      * @param command the complete command entered by the user
-     * @param tasks the tasks in the list
-     * @param taskCount the number of tasks currently stored
-     * @return the updated number of tasks
+     * @param taskList the tasks in the list
      * @throws BoException if the command does not contain a valid task number
      */
-    private static int deleteTask(String command, Task[] tasks, int taskCount) throws BoException {
+    private static void deleteTask(String command, TaskList taskList) throws BoException {
         String[] commandParts = command.split("\\s+");
         if (commandParts.length != 2) {
             throw new BoException("Please use delete followed by one task number, e.g. delete 1.");
@@ -166,23 +156,16 @@ public class Bo {
             throw new BoException("The task number must be a whole number.");
         }
 
-        if (taskIndex < 0 || taskIndex >= taskCount) {
+        if (taskIndex < 0 || taskIndex >= taskList.size()) {
             throw new BoException("I couldn't find a task with that number.");
         }
 
-        Task deletedTask = tasks[taskIndex];
-        int tasksToShift = taskCount - taskIndex - 1;
-        if (tasksToShift > 0) {
-            System.arraycopy(tasks, taskIndex + 1, tasks, taskIndex, tasksToShift);
-        }
-        tasks[taskCount - 1] = null;
-        int updatedTaskCount = taskCount - 1;
-        saveTasks(tasks, updatedTaskCount);
+        Task deletedTask = taskList.remove(taskIndex);
+        saveTasks(taskList);
 
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + deletedTask);
-        System.out.println(" Now you have " + updatedTaskCount + " tasks in the list.");
-        return updatedTaskCount;
+        System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
     }
 
     /**
@@ -264,10 +247,9 @@ public class Bo {
      * Marks the task at the index specified by a {@code mark} command as done.
      *
      * @param command the complete command entered by the user
-     * @param tasks the tasks in the list
-     * @param taskCount the number of tasks currently stored
+     * @param taskList the tasks in the list
      */
-    private static void markTask(String command, Task[] tasks, int taskCount) throws BoException {
+    private static void markTask(String command, TaskList taskList) throws BoException {
         String[] commandParts = command.split("\\s+");
         if (commandParts.length != 2) {
             throw new BoException("Please use mark followed by one task number, e.g. mark 1.");
@@ -275,14 +257,14 @@ public class Bo {
 
         try {
             int taskIndex = Integer.parseInt(commandParts[1]) - 1;
-            if (taskIndex < 0 || taskIndex >= taskCount) {
+            if (taskIndex < 0 || taskIndex >= taskList.size()) {
                 throw new BoException("I couldn't find a task with that number.");
             }
 
-            tasks[taskIndex].markAsDone();
-            saveTasks(tasks, taskCount);
+            taskList.get(taskIndex).markAsDone();
+            saveTasks(taskList);
             System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks[taskIndex]);
+            System.out.println("   " + taskList.get(taskIndex));
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
         }
@@ -292,10 +274,9 @@ public class Bo {
      * Marks the task at the index specified by an {@code unmark} command as not done.
      *
      * @param command the complete command entered by the user
-     * @param tasks the tasks in the list
-     * @param taskCount the number of tasks currently stored
+     * @param taskList the tasks in the list
      */
-    private static void unmarkTask(String command, Task[] tasks, int taskCount) throws BoException {
+    private static void unmarkTask(String command, TaskList taskList) throws BoException {
         String[] commandParts = command.split("\\s+");
         if (commandParts.length != 2) {
             throw new BoException("Please use unmark followed by one task number, e.g. unmark 1.");
@@ -303,14 +284,14 @@ public class Bo {
 
         try {
             int taskIndex = Integer.parseInt(commandParts[1]) - 1;
-            if (taskIndex < 0 || taskIndex >= taskCount) {
+            if (taskIndex < 0 || taskIndex >= taskList.size()) {
                 throw new BoException("I couldn't find a task with that number.");
             }
 
-            tasks[taskIndex].unmarkAsDone();
-            saveTasks(tasks, taskCount);
+            taskList.get(taskIndex).unmarkAsDone();
+            saveTasks(taskList);
             System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks[taskIndex]);
+            System.out.println("   " + taskList.get(taskIndex));
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
         }
@@ -322,12 +303,12 @@ public class Bo {
      * <p>The in-memory operation remains successful if the file system is
      * unavailable, but Bo reports the persistence problem to the user.
      *
-     * @param tasks the tasks in the list
-     * @param taskCount the number of tasks currently stored
+     * @param taskList the tasks in the list
      */
-    private static void saveTasks(Task[] tasks, int taskCount) {
+    private static void saveTasks(TaskList taskList) {
         try {
-            Storage.save(tasks, taskCount);
+            Task[] tasks = taskList.toArray();
+            Storage.save(tasks, tasks.length);
         } catch (IOException | IllegalArgumentException | SecurityException exception) {
             System.out.println(" Warning: I couldn't save your tasks to disk.");
         }
