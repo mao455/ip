@@ -43,8 +43,8 @@ public final class Storage {
      * every launch mode. The compiled class location is checked as a fallback,
      * which supports launching Bo while the working directory is elsewhere.
      *
-     * @return the absolute project root directory named {@code ip}
-     * @throws IllegalStateException if the project root cannot be found
+     * @return the absolute project root directory named {@code ip}.
+     * @throws IllegalStateException if the project root cannot be found.
      */
     private static Path resolveProjectRoot() {
         Path projectRoot = findProjectRoot(Path.of("").toAbsolutePath());
@@ -71,8 +71,8 @@ public final class Storage {
     /**
      * Searches a path and its ancestors for this project root.
      *
-     * @param start the path from which to begin searching
-     * @return the project root, or {@code null} if it is not an ancestor
+     * @param start the path from which to begin searching.
+     * @return the project root, or {@code null} if it is not an ancestor.
      */
     private static Path findProjectRoot(Path start) {
         Path current = start.toAbsolutePath().normalize();
@@ -90,10 +90,10 @@ public final class Storage {
     /**
      * Writes all current tasks to the storage file.
      *
-     * @param tasks the array containing Bo's tasks
-     * @param taskCount the number of valid tasks in the array
-     * @throws IOException if the directory or file cannot be written
-     * @throws IllegalArgumentException if the task array contains invalid data
+     * @param tasks the array containing Bo's tasks.
+     * @param taskCount the number of valid tasks in the array.
+     * @throws IOException if the directory or file cannot be written.
+     * @throws IllegalArgumentException if the task array contains invalid data.
      */
     public static void save(Task[] tasks, int taskCount) throws IOException {
         validateTaskArray(tasks, taskCount);
@@ -124,10 +124,10 @@ public final class Storage {
      * empty task list. Blank lines are ignored, and at most the array's
      * capacity is loaded.
      *
-     * @param tasks the array into which loaded tasks are placed
-     * @return the number of tasks loaded
-     * @throws IOException if the existing file cannot be read
-     * @throws IllegalArgumentException if a stored line is malformed
+     * @param tasks the array into which loaded tasks are placed.
+     * @return the number of tasks loaded.
+     * @throws IOException if the existing file cannot be read.
+     * @throws IllegalArgumentException if a stored line is malformed.
      */
     public static int load(Task[] tasks) throws IOException {
         return loadWithReport(tasks).getTaskCount();
@@ -137,10 +137,10 @@ public final class Storage {
      * Loads tasks and reports malformed or excess records without abandoning
      * otherwise valid records.
      *
-     * @param tasks the array into which loaded tasks are placed
-     * @return details about the records that were loaded or skipped
-     * @throws IOException if the existing file cannot be read
-     * @throws IllegalArgumentException if the task array is null
+     * @param tasks the array into which loaded tasks are placed.
+     * @return details about the records that were loaded or skipped.
+     * @throws IOException if the existing file cannot be read.
+     * @throws IllegalArgumentException if the task array is null.
      */
     public static LoadResult loadWithReport(Task[] tasks) throws IOException {
         validateTaskArray(tasks, 0);
@@ -182,8 +182,8 @@ public final class Storage {
     /**
      * Converts a task to the line format used by the storage file.
      *
-     * @param task the task to format
-     * @return one storage line for the task
+     * @param task the task to format.
+     * @return one storage line for the task.
      */
     private static String formatTask(Task task) {
         String status = task.isDone() ? "1" : "0";
@@ -201,8 +201,8 @@ public final class Storage {
     /**
      * Converts one storage line into a task object.
      *
-     * @param line a serialized task line
-     * @return the task represented by the line
+     * @param line a serialized task line.
+     * @return the task represented by the line.
      */
     private static Task parseTask(String line) {
         List<String> parts = splitFields(line);
@@ -250,8 +250,8 @@ public final class Storage {
     /**
      * Escapes characters that have a special meaning in the storage format.
      *
-     * @param value the field to escape
-     * @return the escaped field
+     * @param value the field to escape.
+     * @return the escaped field.
      */
     private static String escape(String value) {
         return value.replace("\\", "\\\\").replace("|", "\\|");
@@ -260,8 +260,8 @@ public final class Storage {
     /**
      * Splits a storage line while honoring escaped separators.
      *
-     * @param line the serialized task line
-     * @return the unescaped fields in the line
+     * @param line the serialized task line.
+     * @return the unescaped fields in the line.
      */
     private static List<String> splitFields(String line) {
         List<String> fields = new ArrayList<>();
@@ -294,8 +294,8 @@ public final class Storage {
     /**
      * Replaces the task file with a fully written temporary file.
      *
-     * @param temporaryFile the completed temporary file
-     * @throws IOException if the replacement cannot be completed
+     * @param temporaryFile the completed temporary file.
+     * @throws IOException if the replacement cannot be completed.
      */
     private static void replaceTaskFile(Path temporaryFile) throws IOException {
         try {
@@ -309,8 +309,8 @@ public final class Storage {
     /**
      * Checks arguments shared by storage operations.
      *
-     * @param tasks the task array
-     * @param taskCount the number of valid tasks
+     * @param tasks the task array.
+     * @param taskCount the number of valid tasks.
      */
     private static void validateTaskArray(Task[] tasks, int taskCount) {
         if (tasks == null) {
@@ -327,7 +327,7 @@ public final class Storage {
     /**
      * Checks that a task contains the fields required by the storage format.
      *
-     * @param task the task to validate
+     * @param task the task to validate.
      */
     private static void validateTask(Task task) {
         if (task == null || task.getDescription() == null || task.getDescription().isBlank()) {
@@ -360,9 +360,9 @@ public final class Storage {
         /**
          * Creates a load result.
          *
-         * @param taskCount number of valid tasks loaded
-         * @param invalidLineCount number of malformed lines skipped
-         * @param excessTaskCount number of excess valid tasks skipped
+         * @param taskCount number of valid tasks loaded.
+         * @param invalidLineCount number of malformed lines skipped.
+         * @param excessTaskCount number of excess valid tasks skipped.
          */
         private LoadResult(int taskCount, int invalidLineCount, int excessTaskCount) {
             this.taskCount = taskCount;
@@ -373,7 +373,7 @@ public final class Storage {
         /**
          * Returns the number of tasks loaded.
          *
-         * @return number of loaded tasks
+         * @return number of loaded tasks.
          */
         public int getTaskCount() {
             return taskCount;
@@ -382,7 +382,7 @@ public final class Storage {
         /**
          * Returns the number of malformed lines skipped.
          *
-         * @return number of skipped malformed lines
+         * @return number of skipped malformed lines.
          */
         public int getInvalidLineCount() {
             return invalidLineCount;
@@ -391,7 +391,7 @@ public final class Storage {
         /**
          * Returns the number of valid tasks skipped due to capacity.
          *
-         * @return number of skipped excess tasks
+         * @return number of skipped excess tasks.
          */
         public int getExcessTaskCount() {
             return excessTaskCount;

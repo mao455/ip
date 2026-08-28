@@ -24,9 +24,9 @@ public final class TaskList {
     /**
      * Creates a task list initialized from tasks loaded by storage.
      *
-     * @param initialTasks the array containing loaded tasks
-     * @param initialTaskCount number of valid tasks in {@code initialTasks}
-     * @throws IllegalArgumentException if the initial array or count is invalid
+     * @param initialTasks the array containing loaded tasks.
+     * @param initialTaskCount number of valid tasks in {@code initialTasks}.
+     * @throws IllegalArgumentException if the initial array or count is invalid.
      */
     public TaskList(Task[] initialTasks, int initialTaskCount) {
         if (initialTasks == null || initialTaskCount < 0
@@ -40,7 +40,7 @@ public final class TaskList {
     /**
      * Returns the number of tasks in this list.
      *
-     * @return the number of tasks
+     * @return the number of tasks.
      */
     public int size() {
         return taskCount;
@@ -49,7 +49,7 @@ public final class TaskList {
     /**
      * Returns whether this list cannot accept another task.
      *
-     * @return {@code true} when the list has reached its capacity
+     * @return {@code true} when the list has reached its capacity.
      */
     public boolean isFull() {
         return taskCount == tasks.length;
@@ -58,8 +58,8 @@ public final class TaskList {
     /**
      * Adds a task when capacity is available.
      *
-     * @param task the task to add
-     * @return {@code true} when the task was added, or {@code false} when full
+     * @param task the task to add.
+     * @return {@code true} when the task was added, or {@code false} when full.
      */
     public boolean add(Task task) {
         if (task == null) {
@@ -76,9 +76,9 @@ public final class TaskList {
     /**
      * Returns the task at a zero-based index.
      *
-     * @param index the zero-based task index
-     * @return the task at that index
-     * @throws IndexOutOfBoundsException if the index is outside this list
+     * @param index the zero-based task index.
+     * @return the task at that index.
+     * @throws IndexOutOfBoundsException if the index is outside this list.
      */
     public Task get(int index) {
         checkIndex(index);
@@ -88,9 +88,9 @@ public final class TaskList {
     /**
      * Removes and returns the task at a zero-based index.
      *
-     * @param index the zero-based task index
-     * @return the removed task
-     * @throws IndexOutOfBoundsException if the index is outside this list
+     * @param index the zero-based task index.
+     * @return the removed task.
+     * @throws IndexOutOfBoundsException if the index is outside this list.
      */
     public Task remove(int index) {
         checkIndex(index);
@@ -107,7 +107,7 @@ public final class TaskList {
     /**
      * Returns a copy containing the current tasks for storage to serialize.
      *
-     * @return an array containing exactly the current tasks
+     * @return an array containing exactly the current tasks.
      */
     public Task[] toArray() {
         return Arrays.copyOf(tasks, taskCount);

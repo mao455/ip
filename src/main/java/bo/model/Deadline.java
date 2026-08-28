@@ -21,8 +21,8 @@ public class Deadline extends Task {
     /**
      * Creates an incomplete deadline task.
      *
-     * @param description the text describing the task
-     * @param by the date or time by which the task should be completed
+     * @param description the text describing the task.
+     * @param by the date or time by which the task should be completed.
      */
     public Deadline(String description, String by) {
         super(description);
@@ -35,8 +35,8 @@ public class Deadline extends Task {
     /**
      * Creates an incomplete deadline with a date-only value.
      *
-     * @param description the text describing the task
-     * @param by the date by which the task should be completed
+     * @param description the text describing the task.
+     * @param by the date by which the task should be completed.
      */
     public Deadline(String description, LocalDate by) {
         super(description);
@@ -48,8 +48,8 @@ public class Deadline extends Task {
     /**
      * Creates an incomplete deadline with a date and time.
      *
-     * @param description the text describing the task
-     * @param by the date and time by which the task should be completed
+     * @param description the text describing the task.
+     * @param by the date and time by which the task should be completed.
      */
     public Deadline(String description, LocalDateTime by) {
         super(description);
@@ -62,7 +62,7 @@ public class Deadline extends Task {
      * Returns the parsed deadline value.
      *
      * @return the deadline as a {@link LocalDateTime}, or {@code null} for an
-     *         old free-form value that could not be parsed
+     *         old free-form value that could not be parsed.
      */
     public LocalDateTime getBy() {
         return by;
@@ -71,7 +71,7 @@ public class Deadline extends Task {
     /**
      * Returns the value used when displaying this task.
      *
-     * @return a formatted date/time, or the old free-form value
+     * @return a formatted date/time, or the old free-form value.
      */
     public String getDisplayBy() {
         if (legacyBy != null) {
@@ -83,7 +83,7 @@ public class Deadline extends Task {
     /**
      * Returns the value used in the storage file.
      *
-     * @return an ISO date/time, or the old free-form value
+     * @return an ISO date/time, or the old free-form value.
      */
     public String getStoredBy() {
         if (legacyBy != null) {
@@ -95,7 +95,7 @@ public class Deadline extends Task {
     /**
      * Returns the icon used for deadline tasks.
      *
-     * @return {@code D}
+     * @return {@code D}.
      */
     @Override
     public String getTypeIcon() {
@@ -105,7 +105,7 @@ public class Deadline extends Task {
     /**
      * Returns the task including its deadline.
      *
-     * @return the formatted deadline task
+     * @return the formatted deadline task.
      */
     @Override
     public String toString() {
@@ -116,8 +116,8 @@ public class Deadline extends Task {
      * Tries to parse a value while retaining old free-form values from earlier
      * versions of Bo.
      *
-     * @param value the value to parse
-     * @return the parsed value, or {@code null} when it is legacy text
+     * @param value the value to parse.
+     * @return the parsed value, or {@code null} when it is legacy text.
      */
     private static DateTimeParser.ParsedDateTime tryParse(String value) {
         try {

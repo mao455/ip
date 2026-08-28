@@ -13,7 +13,7 @@ public class BoException extends Exception {
     /**
      * Creates an input error with a user-friendly message.
      *
-     * @param message the explanation to show to the user
+     * @param message the explanation to show to the user.
      */
     public BoException(String message) {
         super(message);
