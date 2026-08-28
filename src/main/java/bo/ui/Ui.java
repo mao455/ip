@@ -1,4 +1,10 @@
+package bo.ui;
+
 import java.util.Scanner;
+
+import bo.model.Task;
+import bo.model.TaskList;
+import bo.storage.Storage;
 
 /**
  * Handles Bo's interaction with the user through standard input and output.

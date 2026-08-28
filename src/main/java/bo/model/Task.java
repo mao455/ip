@@ -1,3 +1,5 @@
+package bo.model;
+
 /**
  * Represents a task tracked by Bo.
  */

@@ -1,4 +1,12 @@
+package bo;
+
 import java.io.IOException;
+
+import bo.model.Task;
+import bo.model.TaskList;
+import bo.parser.Parser;
+import bo.storage.Storage;
+import bo.ui.Ui;
 
 /**
  * The main entry point for the Bo chatbot.

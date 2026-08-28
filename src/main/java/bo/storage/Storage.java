@@ -1,3 +1,5 @@
+package bo.storage;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,6 +12,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import bo.model.Deadline;
+import bo.model.Event;
+import bo.model.Task;
+import bo.model.Todo;
 
 /**
  * Saves and loads Bo's tasks in a simple, human-readable text format.

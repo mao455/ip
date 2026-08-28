@@ -1,3 +1,5 @@
+package bo.model;
+
 /**
  * A task without an associated date or time.
  */

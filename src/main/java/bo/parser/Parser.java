@@ -1,3 +1,11 @@
+package bo.parser;
+
+import bo.BoException;
+import bo.model.Deadline;
+import bo.model.Event;
+import bo.model.Task;
+import bo.model.Todo;
+
 /**
  * Interprets user input and turns it into validated commands for Bo.
  */

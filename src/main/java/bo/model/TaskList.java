@@ -1,3 +1,5 @@
+package bo.model;
+
 import java.util.Arrays;
 
 /**

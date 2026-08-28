@@ -1,3 +1,5 @@
+package bo;
+
 /**
  * Represents an input error that can be explained to a Bo user.
  *

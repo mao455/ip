@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 PLAN = ROOT / "test" / "ui-test-plan.md"
-JAVA_FILES = sorted((ROOT / "src" / "main" / "java").glob("*.java"))
+JAVA_FILES = sorted((ROOT / "src" / "main" / "java").rglob("*.java"))
 
 
 def read_cases() -> list[dict[str, str]]:
@@ -108,7 +108,7 @@ def run_case(case: dict[str, str], build_dir: Path, number: int) -> bool:
 
     run_directory = ROOT / "src" / "main" / "java" if number == 8 else ROOT
     result = subprocess.run(
-        ["java", "-cp", str(build_dir), "Bo"],
+        ["java", "-cp", str(build_dir), "bo.Bo"],
         cwd=run_directory,
         input=case["input"],
         text=True,
