@@ -12,6 +12,10 @@ import bo.ui.Ui;
  * The main entry point for the Bo chatbot.
  */
 public class Bo {
+    /** Creates a Bo application instance. */
+    public Bo() {
+    }
+
     /**
      * Starts Bo and processes commands from standard input until {@code bye}.
      *

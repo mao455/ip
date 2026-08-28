@@ -118,7 +118,12 @@ public final class DateTimeParser {
                 .withResolverStyle(ResolverStyle.STRICT);
     }
 
-    /** A typed date/time value together with whether the user supplied a time. */
+    /**
+     * A typed date/time value together with whether the user supplied a time.
+     *
+     * @param value the parsed date and time, with date-only values at midnight
+     * @param includesTime whether the original input included an explicit time
+     */
     public record ParsedDateTime(LocalDateTime value, boolean includesTime) {
     }
 }

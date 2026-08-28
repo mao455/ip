@@ -35,12 +35,20 @@ public final class Ui {
         showSeparator();
     }
 
-    /** Returns whether another command is available from standard input. */
+    /**
+     * Returns whether another command is available from standard input.
+     *
+     * @return {@code true} when another input line is available
+     */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
     }
 
-    /** Reads and trims one command from standard input. */
+    /**
+     * Reads and trims one command from standard input.
+     *
+     * @return the next command without surrounding whitespace
+     */
     public String readCommand() {
         return scanner.nextLine().strip();
     }
@@ -57,7 +65,11 @@ public final class Ui {
         showSeparator();
     }
 
-    /** Shows warnings generated while loading saved tasks. */
+    /**
+     * Shows warnings generated while loading saved tasks.
+     *
+     * @param result the details about invalid or excess records
+     */
     public void showLoadingWarnings(Storage.LoadResult result) {
         if (result.getInvalidLineCount() > 0) {
             System.out.println(" Warning: I skipped " + result.getInvalidLineCount()
@@ -79,12 +91,20 @@ public final class Ui {
         System.out.println(" Warning: I couldn't save your tasks to disk.");
     }
 
-    /** Shows an input error returned by command processing. */
+    /**
+     * Shows an input error returned by command processing.
+     *
+     * @param message the user-facing error message
+     */
     public void showError(String message) {
         System.out.println(" OOPS!!! " + message);
     }
 
-    /** Shows all tasks in their numbered list format. */
+    /**
+     * Shows all tasks in their numbered list format.
+     *
+     * @param taskList the tasks to display
+     */
     public void showTaskList(TaskList taskList) {
         System.out.println(" Here are the tasks in your list:");
         for (int i = 0; i < taskList.size(); i++) {
@@ -97,27 +117,45 @@ public final class Ui {
         System.out.println(" The task list is full.");
     }
 
-    /** Shows confirmation after adding a task. */
+    /**
+     * Shows confirmation after adding a task.
+     *
+     * @param task the task that was added
+     * @param taskCount the number of tasks now in the list
+     */
     public void showTaskAdded(Task task, int taskCount) {
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + taskCount + " tasks in the list.");
     }
 
-    /** Shows confirmation after deleting a task. */
+    /**
+     * Shows confirmation after deleting a task.
+     *
+     * @param task the task that was deleted
+     * @param taskCount the number of tasks now in the list
+     */
     public void showTaskDeleted(Task task, int taskCount) {
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + taskCount + " tasks in the list.");
     }
 
-    /** Shows confirmation after marking a task as done. */
+    /**
+     * Shows confirmation after marking a task as done.
+     *
+     * @param task the task that was marked as done
+     */
     public void showTaskMarked(Task task) {
         System.out.println(" Nice! I've marked this task as done:");
         System.out.println("   " + task);
     }
 
-    /** Shows confirmation after marking a task as not done. */
+    /**
+     * Shows confirmation after marking a task as not done.
+     *
+     * @param task the task that was marked as not done
+     */
     public void showTaskUnmarked(Task task) {
         System.out.println(" OK, I've marked this task as not done yet:");
         System.out.println("   " + task);

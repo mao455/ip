@@ -124,7 +124,11 @@ public class Event extends Task {
         return DateTimeParser.format(new DateTimeParser.ParsedDateTime(to, includesToTime));
     }
 
-    /** Returns the event start value used in the storage file. */
+    /**
+     * Returns the event start value used in the storage file.
+     *
+     * @return an ISO date/time, or the old free-form value
+     */
     public String getStoredFrom() {
         if (legacyFrom != null) {
             return legacyFrom;
@@ -132,7 +136,11 @@ public class Event extends Task {
         return DateTimeParser.serialize(new DateTimeParser.ParsedDateTime(from, includesFromTime));
     }
 
-    /** Returns the event end value used in the storage file. */
+    /**
+     * Returns the event end value used in the storage file.
+     *
+     * @return an ISO date/time, or the old free-form value
+     */
     public String getStoredTo() {
         if (legacyTo != null) {
             return legacyTo;
