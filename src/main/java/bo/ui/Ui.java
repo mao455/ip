@@ -112,6 +112,18 @@ public final class Ui {
         }
     }
 
+    /**
+     * Shows tasks that match a search keyword in their matching-result order.
+     *
+     * @param matchingTasks the tasks found by the search
+     */
+    public void showMatchingTasks(Task[] matchingTasks) {
+        System.out.println(" Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.length; i++) {
+            System.out.println(" " + (i + 1) + "." + matchingTasks[i]);
+        }
+    }
+
     /** Shows the response used when the task list has reached capacity. */
     public void showTaskListFull() {
         System.out.println(" The task list is full.");

@@ -420,3 +420,26 @@ Here are the tasks in your list:
 2.[E][ ] valid event (from: Oct 16 2019 08:00 to: Oct 16 2019 09:00)
 Bye. Hope to see you again soon!
 ```
+
+## Test case 13: Find tasks by keyword
+
+Aim: Verify that find displays only tasks whose descriptions contain the keyword, ignoring case.
+
+### Input
+
+```text
+todo read book
+todo buy milk
+deadline return book /by Friday
+find BOOK
+bye
+```
+
+### Expected output
+
+```text
+Here are the matching tasks in your list:
+1.[T][ ] read book
+2.[D][ ] return book (by: Friday)
+Bye. Hope to see you again soon!
+```

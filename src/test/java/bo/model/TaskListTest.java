@@ -55,6 +55,22 @@ class TaskListTest {
                 () -> assertArrayEquals(new Task[] {first, last}, taskList.toArray()));
     }
 
+    /** Verifies that find is case-insensitive and preserves the original matching order. */
+    @Test
+    void find_keyword_returnsMatchingTasksInOrder() {
+        Task firstMatch = new Todo("read a book");
+        Task nonMatch = new Todo("buy milk");
+        Task secondMatch = new Deadline("return book", LocalDate.of(2026, 8, 28));
+        TaskList taskList = new TaskList();
+        taskList.add(firstMatch);
+        taskList.add(nonMatch);
+        taskList.add(secondMatch);
+
+        Task[] matchingTasks = taskList.find("BOOK");
+
+        assertArrayEquals(new Task[] {firstMatch, secondMatch}, matchingTasks);
+    }
+
     /** Verifies that a full list rejects another task without changing its contents. */
     @Test
     void add_fullList_returnsFalseAndKeepsExistingTasks() {
@@ -81,6 +97,7 @@ class TaskListTest {
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList(new Task[1], -1)),
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList(new Task[1], 2)),
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList().add(null)),
+                () -> assertThrows(IllegalArgumentException.class, () -> new TaskList().find(" ")),
                 () -> assertThrows(IndexOutOfBoundsException.class, () -> new TaskList().get(0)),
                 () -> assertThrows(IndexOutOfBoundsException.class, () -> new TaskList().remove(-1)));
     }

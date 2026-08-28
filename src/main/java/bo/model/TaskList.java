@@ -1,6 +1,7 @@
 package bo.model;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Owns the tasks currently tracked by Bo and operations on that collection.
@@ -111,6 +112,33 @@ public final class TaskList {
      */
     public Task[] toArray() {
         return Arrays.copyOf(tasks, taskCount);
+    }
+
+    /**
+     * Returns tasks whose descriptions contain the given keyword, ignoring case.
+     * Matching tasks retain their original list order.
+     *
+     * @param keyword the text to search for
+     * @return an array containing the matching tasks
+     * @throws IllegalArgumentException if the keyword is null or blank
+     */
+    public Task[] find(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new IllegalArgumentException("A search keyword cannot be blank.");
+        }
+
+        String normalizedKeyword = keyword.strip().toLowerCase(Locale.ROOT);
+        Task[] matchingTasks = new Task[taskCount];
+        int matchingTaskCount = 0;
+        for (int i = 0; i < taskCount; i++) {
+            String description = tasks[i].getDescription();
+            if (description != null
+                    && description.toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
+                matchingTasks[matchingTaskCount] = tasks[i];
+                matchingTaskCount++;
+            }
+        }
+        return Arrays.copyOf(matchingTasks, matchingTaskCount);
     }
 
     /** Checks an index before accessing the backing array. */

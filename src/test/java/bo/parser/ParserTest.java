@@ -60,6 +60,18 @@ class ParserTest {
                 () -> assertEquals("Oct 16 2019 09:05", event.getDisplayTo()));
     }
 
+    /** Verifies that a find command preserves the complete search keyword. */
+    @Test
+    void parse_findCommand_returnsSearchKeyword() throws BoException {
+        Parser.Command command = parser.parse("find book shelf");
+
+        assertAll(
+                () -> assertEquals(Parser.Type.FIND, command.type()),
+                () -> assertEquals(-1, command.taskIndex()),
+                () -> assertNull(command.task()),
+                () -> assertEquals("book shelf", command.keyword()));
+    }
+
     /** Verifies that malformed commands return the documented user-facing errors. */
     @Test
     void parse_invalidCommands_throwsExpectedErrors() {
@@ -68,6 +80,7 @@ class ParserTest {
                 () -> assertParsingFails("blah", "I'm sorry, but I don't know what that means :-("),
                 () -> assertParsingFails("delete", "Please use delete followed by one task number, e.g. delete 1."),
                 () -> assertParsingFails("mark abc", "The task number must be a whole number."),
+                () -> assertParsingFails("find", "Please use find followed by a keyword, e.g. find book."),
                 () -> assertParsingFails("todo", "The description of a todo cannot be empty."),
                 () -> assertParsingFails("deadline return book",
                         "A deadline must include a /by date, e.g. deadline return book /by Friday."),

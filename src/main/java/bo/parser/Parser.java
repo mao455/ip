@@ -30,20 +30,23 @@ public final class Parser {
         String[] commandParts = command.split("\\s+", 2);
         String commandName = commandParts[0];
         if (command.equals("list")) {
-            return new Command(Type.LIST, -1, null);
+            return new Command(Type.LIST, -1, null, null);
         }
         if (commandName.equals("delete")) {
-            return new Command(Type.DELETE, parseTaskIndex(command, Type.DELETE), null);
+            return new Command(Type.DELETE, parseTaskIndex(command, Type.DELETE), null, null);
         }
         if (commandName.equals("mark")) {
-            return new Command(Type.MARK, parseTaskIndex(command, Type.MARK), null);
+            return new Command(Type.MARK, parseTaskIndex(command, Type.MARK), null, null);
         }
         if (commandName.equals("unmark")) {
-            return new Command(Type.UNMARK, parseTaskIndex(command, Type.UNMARK), null);
+            return new Command(Type.UNMARK, parseTaskIndex(command, Type.UNMARK), null, null);
+        }
+        if (commandName.equals("find")) {
+            return new Command(Type.FIND, -1, null, parseKeyword(command));
         }
         if (commandName.equals("todo") || commandName.equals("deadline")
                 || commandName.equals("event")) {
-            return new Command(Type.ADD, -1, createTask(command));
+            return new Command(Type.ADD, -1, createTask(command), null);
         }
 
         throw new BoException("I'm sorry, but I don't know what that means :-(");
@@ -73,6 +76,15 @@ public final class Parser {
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
         }
+    }
+
+    /** Parses the keyword used by a find command. */
+    private static String parseKeyword(String command) throws BoException {
+        String[] commandParts = command.split("\\s+", 2);
+        if (commandParts.length != 2 || commandParts[1].isBlank()) {
+            throw new BoException("Please use find followed by a keyword, e.g. find book.");
+        }
+        return commandParts[1].strip();
     }
 
     /** Creates a task from a validated todo, deadline, or event command. */
@@ -149,6 +161,8 @@ public final class Parser {
         MARK,
         /** Mark one task as not done. */
         UNMARK,
+        /** Find tasks whose descriptions contain a keyword. */
+        FIND,
         /** Add a newly created task. */
         ADD
     }
@@ -159,7 +173,8 @@ public final class Parser {
      * @param type the kind of command to execute.
      * @param taskIndex the zero-based task index, or {@code -1} when unused.
      * @param task the task to add, or {@code null} when the command does not add one.
+     * @param keyword the search keyword, or {@code null} for non-search commands.
      */
-    public record Command(Type type, int taskIndex, Task task) {
+    public record Command(Type type, int taskIndex, Task task, String keyword) {
     }
 }

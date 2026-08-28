@@ -91,6 +91,9 @@ public class Bo {
         case UNMARK:
             unmarkTask(parsedCommand.taskIndex(), taskList, ui);
             return;
+        case FIND:
+            ui.showMatchingTasks(taskList.find(parsedCommand.keyword()));
+            return;
         case ADD:
             Task task = parsedCommand.task();
             if (!taskList.add(task)) {
