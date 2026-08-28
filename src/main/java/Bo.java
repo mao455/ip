@@ -187,7 +187,8 @@ public class Bo {
 
     /**
      * Creates the appropriate task subtype from an add-task command.
-     * Dates and times are deliberately kept as strings for this increment.
+     * Recognized dates and times are parsed by the task constructors and stored
+     * as {@code LocalDateTime} values.
      *
      * @param command the complete command entered by the user
      * @return the task represented by the command

@@ -269,3 +269,154 @@ Here are the tasks in your list:
 3.[E][ ] project sync (from: Monday to: Tuesday)
 Bye. Hope to see you again soon!
 ```
+
+## Test case 9: Parse and format dates and times
+
+Aim: Verify that ISO dates and day/month/year date-times are stored as typed values and displayed in a human-readable format.
+
+### Input
+
+```text
+deadline return book /by 2019-10-15
+deadline return book /by 2/12/2019 1800
+event project meeting /from 2019-10-15 /to 2019-10-16 0905
+list
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[D][ ] return book (by: Oct 15 2019)
+Got it. I've added this task:
+[D][ ] return book (by: Dec 02 2019 18:00)
+Got it. I've added this task:
+[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019 09:05)
+Here are the tasks in your list:
+1.[D][ ] return book (by: Oct 15 2019)
+2.[D][ ] return book (by: Dec 02 2019 18:00)
+3.[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019 09:05)
+Bye. Hope to see you again soon!
+```
+
+### Expected saved file
+
+```text
+D | 0 | return book | 2019-10-15
+D | 0 | return book | 2019-12-02T18:00:00
+E | 0 | project meeting | 2019-10-15 | 2019-10-16T09:05:00
+```
+
+## Test case 10: Read typed dates from the storage file
+
+Aim: Verify that dates and date-times saved in ISO form are loaded into task objects and displayed using Bo's human-readable format.
+
+### Initial saved file
+
+```text
+D | 1 | submit report | 2019-10-15
+D | 0 | return book | 2019-12-02T18:00:00
+E | 0 | project meeting | 2019-10-15T08:00:00 | 2019-10-16T09:05:00
+```
+
+### Input
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+Here are the tasks in your list:
+1.[D][X] submit report (by: Oct 15 2019)
+2.[D][ ] return book (by: Dec 02 2019 18:00)
+3.[E][ ] project meeting (from: Oct 15 2019 08:00 to: Oct 16 2019 09:05)
+Bye. Hope to see you again soon!
+```
+
+## Test case 11: Rewrite typed dates after task mutations
+
+Aim: Verify that reading typed dates and then marking, deleting, and adding tasks rewrites the complete storage file in canonical ISO form.
+
+### Initial saved file
+
+```text
+D | 0 | old deadline | 2019-10-15
+E | 0 | old event | 2019-10-16T10:00:00 | 2019-10-16T11:00:00
+```
+
+### Input
+
+```text
+mark 1
+unmark 1
+delete 2
+deadline new deadline /by 2/12/2019 1800
+event new event /from 2019-11-01 /to 2019-11-02
+list
+bye
+```
+
+### Expected output
+
+```text
+Nice! I've marked this task as done:
+[D][X] old deadline (by: Oct 15 2019)
+OK, I've marked this task as not done yet:
+[D][ ] old deadline (by: Oct 15 2019)
+Noted. I've removed this task:
+[E][ ] old event (from: Oct 16 2019 10:00 to: Oct 16 2019 11:00)
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[D][ ] new deadline (by: Dec 02 2019 18:00)
+Now you have 2 tasks in the list.
+Got it. I've added this task:
+[E][ ] new event (from: Nov 01 2019 to: Nov 02 2019)
+Now you have 3 tasks in the list.
+Here are the tasks in your list:
+1.[D][ ] old deadline (by: Oct 15 2019)
+2.[D][ ] new deadline (by: Dec 02 2019 18:00)
+3.[E][ ] new event (from: Nov 01 2019 to: Nov 02 2019)
+Bye. Hope to see you again soon!
+```
+
+### Expected saved file
+
+```text
+D | 0 | old deadline | 2019-10-15
+D | 0 | new deadline | 2019-12-02T18:00:00
+E | 0 | new event | 2019-11-01 | 2019-11-02
+```
+
+## Test case 12: Skip malformed storage records around valid dates
+
+Aim: Verify that invalid escapes and wrong field counts are skipped without preventing valid typed deadline and event records from loading.
+
+### Initial saved file
+
+```text
+D | 0 | valid deadline | 2019-10-15
+D | 0 | invalid escape | 2019-10-15\q
+E | 0 | valid event | 2019-10-16T08:00:00 | 2019-10-16T09:00:00
+E | 0 | missing end | 2019-10-16T08:00:00
+```
+
+### Input
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+Warning: I skipped 2 invalid task line(s) in the saved file.
+Here are the tasks in your list:
+1.[D][ ] valid deadline (by: Oct 15 2019)
+2.[E][ ] valid event (from: Oct 16 2019 08:00 to: Oct 16 2019 09:00)
+Bye. Hope to see you again soon!
+```

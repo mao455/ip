@@ -182,11 +182,11 @@ public final class Storage {
         String status = task.isDone() ? "1" : "0";
         if (task instanceof Deadline deadline) {
             return "D | " + status + " | " + escape(task.getDescription())
-                    + " | " + escape(deadline.getBy());
+                    + " | " + escape(deadline.getStoredBy());
         }
         if (task instanceof Event event) {
             return "E | " + status + " | " + escape(task.getDescription())
-                    + " | " + escape(event.getFrom()) + " | " + escape(event.getTo());
+                    + " | " + escape(event.getStoredFrom()) + " | " + escape(event.getStoredTo());
         }
         return "T | " + status + " | " + escape(task.getDescription());
     }
@@ -327,12 +327,12 @@ public final class Storage {
             throw new IllegalArgumentException("A task must have a non-blank description.");
         }
         if (task instanceof Deadline deadline
-                && (deadline.getBy() == null || deadline.getBy().isBlank())) {
+                && (deadline.getStoredBy() == null || deadline.getStoredBy().isBlank())) {
             throw new IllegalArgumentException("A deadline must have a non-blank date.");
         }
         if (task instanceof Event event
-                && (event.getFrom() == null || event.getFrom().isBlank()
-                || event.getTo() == null || event.getTo().isBlank())) {
+                && (event.getStoredFrom() == null || event.getStoredFrom().isBlank()
+                || event.getStoredTo() == null || event.getStoredTo().isBlank())) {
             throw new IllegalArgumentException("An event must have non-blank times.");
         }
     }

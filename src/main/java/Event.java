@@ -1,12 +1,27 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * A task that starts and ends at specified dates or times.
  */
 public class Event extends Task {
-    /** The date or time at which this event starts. */
-    private final String from;
+    /** The parsed date/time at which this event starts. */
+    private final LocalDateTime from;
 
-    /** The date or time at which this event ends. */
-    private final String to;
+    /** The parsed date/time at which this event ends. */
+    private final LocalDateTime to;
+
+    /** Whether the original start value included a time. */
+    private final boolean includesFromTime;
+
+    /** Whether the original end value included a time. */
+    private final boolean includesToTime;
+
+    /** The original free-form start value, if it could not be parsed. */
+    private final String legacyFrom;
+
+    /** The original free-form end value, if it could not be parsed. */
+    private final String legacyTo;
 
     /**
      * Creates an incomplete event task.
@@ -17,26 +32,108 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) {
         super(description);
-        this.from = from;
-        this.to = to;
+        DateTimeParser.ParsedDateTime parsedFrom = tryParse(from);
+        DateTimeParser.ParsedDateTime parsedTo = tryParse(to);
+        this.from = parsedFrom == null ? null : parsedFrom.value();
+        this.to = parsedTo == null ? null : parsedTo.value();
+        this.includesFromTime = parsedFrom != null && parsedFrom.includesTime();
+        this.includesToTime = parsedTo != null && parsedTo.includesTime();
+        this.legacyFrom = parsedFrom == null ? from : null;
+        this.legacyTo = parsedTo == null ? to : null;
     }
 
     /**
-     * Returns the event's starting value exactly as entered by the user.
+     * Creates an incomplete event with date-only start and end values.
      *
-     * @return the event start date or time
+     * @param description the text describing the event
+     * @param from the event start date
+     * @param to the event end date
      */
-    public String getFrom() {
+    public Event(String description, LocalDate from, LocalDate to) {
+        super(description);
+        this.from = from.atStartOfDay();
+        this.to = to.atStartOfDay();
+        this.includesFromTime = false;
+        this.includesToTime = false;
+        this.legacyFrom = null;
+        this.legacyTo = null;
+    }
+
+    /**
+     * Creates an incomplete event with date and time start and end values.
+     *
+     * @param description the text describing the event
+     * @param from the event start date and time
+     * @param to the event end date and time
+     */
+    public Event(String description, LocalDateTime from, LocalDateTime to) {
+        super(description);
+        this.from = from;
+        this.to = to;
+        this.includesFromTime = true;
+        this.includesToTime = true;
+        this.legacyFrom = null;
+        this.legacyTo = null;
+    }
+
+    /**
+     * Returns the parsed event start value.
+     *
+     * @return the event start as a {@link LocalDateTime}, or {@code null} for
+     *         an old free-form value that could not be parsed
+     */
+    public LocalDateTime getFrom() {
         return from;
     }
 
     /**
-     * Returns the event's ending value exactly as entered by the user.
+     * Returns the parsed event end value.
      *
-     * @return the event end date or time
+     * @return the event end as a {@link LocalDateTime}, or {@code null} for an
+     *         old free-form value that could not be parsed
      */
-    public String getTo() {
+    public LocalDateTime getTo() {
         return to;
+    }
+
+    /**
+     * Returns the event start value used when displaying the task.
+     *
+     * @return a formatted date/time, or the old free-form value
+     */
+    public String getDisplayFrom() {
+        if (legacyFrom != null) {
+            return legacyFrom;
+        }
+        return DateTimeParser.format(new DateTimeParser.ParsedDateTime(from, includesFromTime));
+    }
+
+    /**
+     * Returns the event end value used when displaying the task.
+     *
+     * @return a formatted date/time, or the old free-form value
+     */
+    public String getDisplayTo() {
+        if (legacyTo != null) {
+            return legacyTo;
+        }
+        return DateTimeParser.format(new DateTimeParser.ParsedDateTime(to, includesToTime));
+    }
+
+    /** Returns the event start value used in the storage file. */
+    public String getStoredFrom() {
+        if (legacyFrom != null) {
+            return legacyFrom;
+        }
+        return DateTimeParser.serialize(new DateTimeParser.ParsedDateTime(from, includesFromTime));
+    }
+
+    /** Returns the event end value used in the storage file. */
+    public String getStoredTo() {
+        if (legacyTo != null) {
+            return legacyTo;
+        }
+        return DateTimeParser.serialize(new DateTimeParser.ParsedDateTime(to, includesToTime));
     }
 
     /**
@@ -56,6 +153,21 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return super.toString() + " (from: " + from + " to: " + to + ")";
+        return super.toString() + " (from: " + getDisplayFrom() + " to: " + getDisplayTo() + ")";
+    }
+
+    /**
+     * Tries to parse a value while retaining old free-form values from earlier
+     * versions of Bo.
+     *
+     * @param value the value to parse
+     * @return the parsed value, or {@code null} when it is legacy text
+     */
+    private static DateTimeParser.ParsedDateTime tryParse(String value) {
+        try {
+            return DateTimeParser.parse(value);
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
     }
 }
