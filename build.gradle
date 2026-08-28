@@ -48,6 +48,7 @@ jar {
 }
 
 shadowJar {
+    // Package the application and runtime dependencies into one executable JAR.
     archiveFileName = 'duke.jar'
 }
 

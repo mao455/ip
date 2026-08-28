@@ -35,3 +35,34 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Building and running the fat JAR
+
+The project uses the Shadow Gradle plugin to package the application and its
+runtime dependencies into one executable (fat) JAR. The configured entry point
+is `bo.Bo`, and the generated file is named `duke.jar`.
+
+Run these commands from the project root:
+
+```bash
+./gradlew shadowJar
+```
+
+The JAR is created at:
+
+```text
+build/libs/duke.jar
+```
+
+To run it, use Java 25 and execute:
+
+```bash
+java -jar build/libs/duke.jar
+```
+
+Bo then accepts commands through the terminal. For example, enter `list` to
+display saved tasks or `bye` to exit.
+
+On Windows, use `gradlew.bat shadowJar` and
+`java -jar build\\libs\\duke.jar` instead. If you want to force a clean
+rebuild, run `./gradlew clean shadowJar` before running the JAR.
