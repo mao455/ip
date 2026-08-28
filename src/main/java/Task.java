@@ -18,6 +18,24 @@ public class Task {
         this.isDone = false;
     }
 
+    /**
+     * Returns the task description.
+     *
+     * @return the text describing this task
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Returns whether this task has been marked as done.
+     *
+     * @return {@code true} when this task is done
+     */
+    public boolean isDone() {
+        return isDone;
+    }
+
     /** Marks this task as done. */
     public void markAsDone() {
         isDone = true;
