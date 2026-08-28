@@ -12,10 +12,14 @@ import bo.ui.Ui;
  * The main entry point for the Bo chatbot.
  */
 public class Bo {
+    /** Creates a Bo application instance. */
+    public Bo() {
+    }
+
     /**
      * Starts Bo and processes commands from standard input until {@code bye}.
      *
-     * @param args command-line arguments, which are not used
+     * @param args command-line arguments, which are not used.
      */
     public static void main(String[] args) {
         Ui ui = new Ui();
@@ -49,9 +53,9 @@ public class Bo {
      * cannot be read. In the latter case, a warning is shown so the user knows
      * that the saved data was not available.
      *
-     * @param tasks the array into which loaded tasks are placed
-     * @param ui the UI used to show loading warnings
-     * @return the number of tasks loaded
+     * @param tasks the array into which loaded tasks are placed.
+     * @param ui the UI used to show loading warnings.
+     * @return the number of tasks loaded.
      */
     private static int loadTasks(Task[] tasks, Ui ui) {
         try {
@@ -67,9 +71,9 @@ public class Bo {
     /**
      * Processes one command using the supplied task list.
      *
-     * @param command the complete command entered by the user
-     * @param taskList the tasks in the list
-     * @throws BoException if the command is invalid
+     * @param command the complete command entered by the user.
+     * @param taskList the tasks in the list.
+     * @throws BoException if the command is invalid.
      */
     private static void processCommand(String command, TaskList taskList, Ui ui, Parser parser)
             throws BoException {
@@ -105,10 +109,10 @@ public class Bo {
      * Deletes the task at the index specified by a {@code delete} command.
      * Later tasks are shifted left so that task numbers remain consecutive.
      *
-     * @param taskIndex the zero-based task index
-     * @param taskList the tasks in the list
-     * @param ui the UI used to show the result
-     * @throws BoException if the task index is outside the list
+     * @param taskIndex the zero-based task index.
+     * @param taskList the tasks in the list.
+     * @param ui the UI used to show the result.
+     * @throws BoException if the task index is outside the list.
      */
     private static void deleteTask(int taskIndex, TaskList taskList, Ui ui) throws BoException {
         if (taskIndex < 0 || taskIndex >= taskList.size()) {
@@ -123,9 +127,9 @@ public class Bo {
     /**
      * Marks the task at the index specified by a {@code mark} command as done.
      *
-     * @param taskIndex the zero-based task index
-     * @param taskList the tasks in the list
-     * @param ui the UI used to show the result
+     * @param taskIndex the zero-based task index.
+     * @param taskList the tasks in the list.
+     * @param ui the UI used to show the result.
      */
     private static void markTask(int taskIndex, TaskList taskList, Ui ui) throws BoException {
         if (taskIndex < 0 || taskIndex >= taskList.size()) {
@@ -140,9 +144,9 @@ public class Bo {
     /**
      * Marks the task at the index specified by an {@code unmark} command as not done.
      *
-     * @param taskIndex the zero-based task index
-     * @param taskList the tasks in the list
-     * @param ui the UI used to show the result
+     * @param taskIndex the zero-based task index.
+     * @param taskList the tasks in the list.
+     * @param ui the UI used to show the result.
      */
     private static void unmarkTask(int taskIndex, TaskList taskList, Ui ui) throws BoException {
         if (taskIndex < 0 || taskIndex >= taskList.size()) {
@@ -160,8 +164,8 @@ public class Bo {
      * <p>The in-memory operation remains successful if the file system is
      * unavailable, but Bo reports the persistence problem to the user.
      *
-     * @param taskList the tasks in the list
-     * @param ui the UI used to show save warnings
+     * @param taskList the tasks in the list.
+     * @param ui the UI used to show save warnings.
      */
     private static void saveTasks(TaskList taskList, Ui ui) {
         try {

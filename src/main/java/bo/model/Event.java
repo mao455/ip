@@ -30,9 +30,9 @@ public class Event extends Task {
     /**
      * Creates an incomplete event task.
      *
-     * @param description the text describing the task
-     * @param from the date or time at which the event starts
-     * @param to the date or time at which the event ends
+     * @param description the text describing the task.
+     * @param from the date or time at which the event starts.
+     * @param to the date or time at which the event ends.
      */
     public Event(String description, String from, String to) {
         super(description);
@@ -49,9 +49,9 @@ public class Event extends Task {
     /**
      * Creates an incomplete event with date-only start and end values.
      *
-     * @param description the text describing the event
-     * @param from the event start date
-     * @param to the event end date
+     * @param description the text describing the event.
+     * @param from the event start date.
+     * @param to the event end date.
      */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
@@ -66,9 +66,9 @@ public class Event extends Task {
     /**
      * Creates an incomplete event with date and time start and end values.
      *
-     * @param description the text describing the event
-     * @param from the event start date and time
-     * @param to the event end date and time
+     * @param description the text describing the event.
+     * @param from the event start date and time.
+     * @param to the event end date and time.
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
@@ -84,7 +84,7 @@ public class Event extends Task {
      * Returns the parsed event start value.
      *
      * @return the event start as a {@link LocalDateTime}, or {@code null} for
-     *         an old free-form value that could not be parsed
+     *         an old free-form value that could not be parsed.
      */
     public LocalDateTime getFrom() {
         return from;
@@ -103,7 +103,7 @@ public class Event extends Task {
     /**
      * Returns the event start value used when displaying the task.
      *
-     * @return a formatted date/time, or the old free-form value
+     * @return a formatted date/time, or the old free-form value.
      */
     public String getDisplayFrom() {
         if (legacyFrom != null) {
@@ -115,7 +115,7 @@ public class Event extends Task {
     /**
      * Returns the event end value used when displaying the task.
      *
-     * @return a formatted date/time, or the old free-form value
+     * @return a formatted date/time, or the old free-form value.
      */
     public String getDisplayTo() {
         if (legacyTo != null) {
@@ -124,7 +124,11 @@ public class Event extends Task {
         return DateTimeParser.format(new DateTimeParser.ParsedDateTime(to, includesToTime));
     }
 
-    /** Returns the event start value used in the storage file. */
+    /**
+     * Returns the event start value used in the storage file.
+     *
+     * @return an ISO date/time, or the old free-form value.
+     */
     public String getStoredFrom() {
         if (legacyFrom != null) {
             return legacyFrom;
@@ -132,7 +136,11 @@ public class Event extends Task {
         return DateTimeParser.serialize(new DateTimeParser.ParsedDateTime(from, includesFromTime));
     }
 
-    /** Returns the event end value used in the storage file. */
+    /**
+     * Returns the event end value used in the storage file.
+     *
+     * @return an ISO date/time, or the old free-form value.
+     */
     public String getStoredTo() {
         if (legacyTo != null) {
             return legacyTo;
@@ -143,7 +151,7 @@ public class Event extends Task {
     /**
      * Returns the icon used for event tasks.
      *
-     * @return {@code E}
+     * @return {@code E}.
      */
     @Override
     public String getTypeIcon() {
@@ -153,7 +161,7 @@ public class Event extends Task {
     /**
      * Returns the task including its start and end values.
      *
-     * @return the formatted event task
+     * @return the formatted event task.
      */
     @Override
     public String toString() {
@@ -164,8 +172,8 @@ public class Event extends Task {
      * Tries to parse a value while retaining old free-form values from earlier
      * versions of Bo.
      *
-     * @param value the value to parse
-     * @return the parsed value, or {@code null} when it is legacy text
+     * @param value the value to parse.
+     * @return the parsed value, or {@code null} when it is legacy text.
      */
     private static DateTimeParser.ParsedDateTime tryParse(String value) {
         try {

@@ -46,9 +46,9 @@ public final class DateTimeParser {
      * {@code 2/12/2019 1800}, {@code 2019-10-15 1800}, and
      * {@code 2019-10-15 18:00}. The slash form uses day/month/year order.</p>
      *
-     * @param input the date or date-time entered by the user
-     * @return the parsed value and whether the input included a time
-     * @throws IllegalArgumentException if the input is not a supported value
+     * @param input the date or date-time entered by the user.
+     * @return the parsed value and whether the input included a time.
+     * @throws IllegalArgumentException if the input is not a supported value.
      */
     public static ParsedDateTime parse(String input) {
         if (input == null || input.isBlank()) {
@@ -84,8 +84,8 @@ public final class DateTimeParser {
     /**
      * Formats a parsed value for display in Bo's responses.
      *
-     * @param parsedDateTime the value to format
-     * @return a human-readable date or date-time
+     * @param parsedDateTime the value to format.
+     * @return a human-readable date or date-time.
      */
     public static String format(ParsedDateTime parsedDateTime) {
         if (parsedDateTime.includesTime()) {
@@ -97,8 +97,8 @@ public final class DateTimeParser {
     /**
      * Formats a parsed value in a stable form for the storage file.
      *
-     * @param parsedDateTime the value to serialize
-     * @return an ISO date or ISO local date-time
+     * @param parsedDateTime the value to serialize.
+     * @return an ISO date or ISO local date-time.
      */
     public static String serialize(ParsedDateTime parsedDateTime) {
         if (parsedDateTime.includesTime()) {
@@ -110,15 +110,20 @@ public final class DateTimeParser {
     /**
      * Creates a strict formatter for a pattern containing a year.
      *
-     * @param pattern the date/time pattern
-     * @return the strict formatter
+     * @param pattern the date/time pattern.
+     * @return the strict formatter.
      */
     private static DateTimeFormatter formatter(String pattern) {
         return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
     }
 
-    /** A typed date/time value together with whether the user supplied a time. */
+    /**
+     * A typed date/time value together with whether the user supplied a time.
+     *
+     * @param value the parsed date and time, with date-only values at midnight.
+     * @param includesTime whether the original input included an explicit time.
+     */
     public record ParsedDateTime(LocalDateTime value, boolean includesTime) {
     }
 }

@@ -18,9 +18,9 @@ public final class Parser {
     /**
      * Parses one user command.
      *
-     * @param command the complete command entered by the user
-     * @return the structured command
-     * @throws BoException if the command or its arguments are invalid
+     * @param command the complete command entered by the user.
+     * @return the structured command.
+     * @throws BoException if the command or its arguments are invalid.
      */
     public Command parse(String command) throws BoException {
         if (command.isEmpty()) {
@@ -52,10 +52,10 @@ public final class Parser {
     /**
      * Parses the one-based task number used by a task mutation command.
      *
-     * @param command the complete command entered by the user
-     * @param type the mutation whose argument is being parsed
-     * @return the zero-based task index
-     * @throws BoException if the command does not contain a whole number
+     * @param command the complete command entered by the user.
+     * @param type the mutation whose argument is being parsed.
+     * @return the zero-based task index.
+     * @throws BoException if the command does not contain a whole number.
      */
     private static int parseTaskIndex(String command, Type type) throws BoException {
         String[] commandParts = command.split("\\s+");
@@ -153,7 +153,13 @@ public final class Parser {
         ADD
     }
 
-    /** A parsed command and the data needed to execute it. */
+    /**
+     * A parsed command and the data needed to execute it.
+     *
+     * @param type the kind of command to execute.
+     * @param taskIndex the zero-based task index, or {@code -1} when unused.
+     * @param task the task to add, or {@code null} when the command does not add one.
+     */
     public record Command(Type type, int taskIndex, Task task) {
     }
 }
