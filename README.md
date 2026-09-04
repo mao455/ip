@@ -13,7 +13,8 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/bo/Bo.java` file, right-click it, and choose `Run Bo.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
+1. After that, locate the `src/main/java/bo/gui/Launcher.java` file, right-click it, and choose `Run Launcher.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, the Bo GUI should open.
+   To run the command-line version instead, run `bo.Bo.main()`, which produces output similar to the following:
    ```
    ____________________________________________________________
     ____        
@@ -36,11 +37,23 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
+When running the GUI from a terminal, run it from the project root so that
+Gradle can resolve the package structure and the storage file path correctly:
+
+```bash
+./gradlew run
+```
+
+The GUI launcher is `bo.gui.Launcher`, while the command-line entry point is
+`bo.Bo`. Compiling `src/main/java/bo/Bo.java` directly from
+inside its package directory with `javac Bo.java` does not include the project
+root on Java's classpath.
+
 ## Building and running the fat JAR
 
 The project uses the Shadow Gradle plugin to package the application and its
 runtime dependencies into one executable (fat) JAR. The configured entry point
-is `bo.Bo`, and the generated file is named `duke.jar`.
+is `bo.gui.Launcher`, and the generated file is named `duke.jar`.
 
 Run these commands from the project root:
 
@@ -60,8 +73,8 @@ To run it, use Java 25 and execute:
 java -jar build/libs/duke.jar
 ```
 
-Bo then accepts commands through the terminal. For example, enter `list` to
-display saved tasks or `bye` to exit.
+Bo then accepts commands through the GUI. Enter commands such as `list` to
+display saved tasks or `bye` to finish the conversation.
 
 On Windows, use `gradlew.bat shadowJar` and
 `java -jar build\\libs\\duke.jar` instead. If you want to force a clean

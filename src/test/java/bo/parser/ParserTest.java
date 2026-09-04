@@ -54,10 +54,10 @@ class ParserTest {
                 () -> assertEquals(Parser.Type.ADD, todoCommand.type()),
                 () -> assertEquals("read book", todo.getDescription()),
                 () -> assertEquals("return book", deadline.getDescription()),
-                () -> assertEquals("Oct 15 2019", deadline.getDisplayBy()),
+                () -> assertEquals("Oct 15 2019", deadline.getDisplayDeadline()),
                 () -> assertEquals("project meeting", event.getDescription()),
-                () -> assertEquals("Oct 15 2019", event.getDisplayFrom()),
-                () -> assertEquals("Oct 16 2019 09:05", event.getDisplayTo()));
+                () -> assertEquals("Oct 15 2019", event.getDisplayStart()),
+                () -> assertEquals("Oct 16 2019 09:05", event.getDisplayEnd()));
     }
 
     /** Verifies that a find command preserves the complete search keyword. */

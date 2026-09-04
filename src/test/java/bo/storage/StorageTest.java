@@ -62,8 +62,8 @@ class StorageTest {
         Task[] tasks = {todo, deadline, event};
 
         Storage.save(tasks, tasks.length);
-        Task[] loaded = new Task[3];
-        Storage.LoadResult result = Storage.loadWithReport(loaded);
+        Task[] loadedTasks = new Task[3];
+        Storage.LoadResult result = Storage.loadWithReport(loadedTasks);
 
         assertAll(
                 () -> assertEquals("T | 1 | read \\| book\\\\notes\n"
@@ -73,11 +73,13 @@ class StorageTest {
                 () -> assertEquals(3, result.getTaskCount()),
                 () -> assertEquals(0, result.getInvalidLineCount()),
                 () -> assertEquals(0, result.getExcessTaskCount()),
-                () -> assertEquals("read | book\\notes", loaded[0].getDescription()),
-                () -> assertInstanceOf(Todo.class, loaded[0]),
-                () -> assertEquals(true, loaded[0].isDone()),
-                () -> assertEquals("2026-08-28", assertInstanceOf(Deadline.class, loaded[1]).getStoredBy()),
-                () -> assertEquals("2026-08-29T09:05:00", assertInstanceOf(Event.class, loaded[2]).getStoredFrom()));
+                () -> assertEquals("read | book\\notes", loadedTasks[0].getDescription()),
+                () -> assertInstanceOf(Todo.class, loadedTasks[0]),
+                () -> assertEquals(true, loadedTasks[0].isDone()),
+                () -> assertEquals("2026-08-28",
+                        assertInstanceOf(Deadline.class, loadedTasks[1]).getStoredDeadline()),
+                () -> assertEquals("2026-08-29T09:05:00",
+                        assertInstanceOf(Event.class, loadedTasks[2]).getStoredStart()));
     }
 
     /** Verifies that malformed lines are skipped while later valid lines are loaded. */
@@ -89,17 +91,17 @@ class StorageTest {
                 + "E | 2 | invalid status | Monday | Tuesday\n"
                 + "E | 0 | valid event | Monday | Tuesday\n\n");
 
-        Task[] loaded = new Task[5];
-        Storage.LoadResult result = Storage.loadWithReport(loaded);
+        Task[] loadedTasks = new Task[5];
+        Storage.LoadResult result = Storage.loadWithReport(loadedTasks);
 
         assertAll(
                 () -> assertEquals(3, result.getTaskCount()),
                 () -> assertEquals(2, result.getInvalidLineCount()),
                 () -> assertEquals(0, result.getExcessTaskCount()),
-                () -> assertEquals("valid todo", loaded[0].getDescription()),
-                () -> assertEquals(true, loaded[0].isDone()),
-                () -> assertEquals("valid deadline", loaded[1].getDescription()),
-                () -> assertEquals("valid event", loaded[2].getDescription()));
+                () -> assertEquals("valid todo", loadedTasks[0].getDescription()),
+                () -> assertEquals(true, loadedTasks[0].isDone()),
+                () -> assertEquals("valid deadline", loadedTasks[1].getDescription()),
+                () -> assertEquals("valid event", loadedTasks[2].getDescription()));
     }
 
     /** Verifies that valid records beyond the supplied array capacity are reported. */
@@ -107,30 +109,30 @@ class StorageTest {
     void loadWithReport_moreRecordsThanCapacity_reportsExcessRecords() throws IOException {
         writeStorage("T | 0 | first\nT | 0 | second\nT | 0 | third\n");
 
-        Task[] loaded = new Task[2];
-        Storage.LoadResult result = Storage.loadWithReport(loaded);
+        Task[] loadedTasks = new Task[2];
+        Storage.LoadResult result = Storage.loadWithReport(loadedTasks);
 
         assertAll(
                 () -> assertEquals(2, result.getTaskCount()),
                 () -> assertEquals(0, result.getInvalidLineCount()),
                 () -> assertEquals(1, result.getExcessTaskCount()),
-                () -> assertEquals("first", loaded[0].getDescription()),
-                () -> assertEquals("second", loaded[1].getDescription()));
+                () -> assertEquals("first", loadedTasks[0].getDescription()),
+                () -> assertEquals("second", loadedTasks[1].getDescription()));
     }
 
     /** Verifies that a missing file produces an empty result and clears stale array entries. */
     @Test
     void loadWithReport_missingFile_returnsEmptyResult() throws IOException {
-        Task[] loaded = {new Todo("stale task"), null};
+        Task[] loadedTasks = {new Todo("stale task"), null};
 
-        Storage.LoadResult result = Storage.loadWithReport(loaded);
+        Storage.LoadResult result = Storage.loadWithReport(loadedTasks);
 
         assertAll(
                 () -> assertEquals(0, result.getTaskCount()),
                 () -> assertEquals(0, result.getInvalidLineCount()),
                 () -> assertEquals(0, result.getExcessTaskCount()),
-                () -> assertNull(loaded[0]),
-                () -> assertNull(loaded[1]));
+                () -> assertNull(loadedTasks[0]),
+                () -> assertNull(loadedTasks[1]));
     }
 
     /** Verifies that save rejects invalid arrays, counts, and task descriptions. */

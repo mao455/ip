@@ -10,52 +10,52 @@ import bo.time.DateTimeParser;
  */
 public class Deadline extends Task {
     /** The parsed date/time by which this task should be completed. */
-    private final LocalDateTime by;
+    private final LocalDateTime deadlineDateTime;
 
     /** Whether the original value included a time. */
     private final boolean includesTime;
 
     /** The original free-form value, used for backwards-compatible old data. */
-    private final String legacyBy;
+    private final String legacyDeadline;
 
     /**
      * Creates an incomplete deadline task.
      *
      * @param description the text describing the task.
-     * @param by the date or time by which the task should be completed.
+     * @param deadlineDateTime the date or time by which the task should be completed.
      */
-    public Deadline(String description, String by) {
+    public Deadline(String description, String deadlineDateTime) {
         super(description);
-        DateTimeParser.ParsedDateTime parsed = tryParse(by);
-        this.by = parsed == null ? null : parsed.value();
+        DateTimeParser.ParsedDateTime parsed = tryParse(deadlineDateTime);
+        this.deadlineDateTime = parsed == null ? null : parsed.value();
         this.includesTime = parsed != null && parsed.includesTime();
-        this.legacyBy = parsed == null ? by : null;
+        this.legacyDeadline = parsed == null ? deadlineDateTime : null;
     }
 
     /**
      * Creates an incomplete deadline with a date-only value.
      *
      * @param description the text describing the task.
-     * @param by the date by which the task should be completed.
+     * @param deadlineDate the date by which the task should be completed.
      */
-    public Deadline(String description, LocalDate by) {
+    public Deadline(String description, LocalDate deadlineDate) {
         super(description);
-        this.by = by.atStartOfDay();
+        this.deadlineDateTime = deadlineDate.atStartOfDay();
         this.includesTime = false;
-        this.legacyBy = null;
+        this.legacyDeadline = null;
     }
 
     /**
      * Creates an incomplete deadline with a date and time.
      *
      * @param description the text describing the task.
-     * @param by the date and time by which the task should be completed.
+     * @param deadlineDateTime the date and time by which the task should be completed.
      */
-    public Deadline(String description, LocalDateTime by) {
+    public Deadline(String description, LocalDateTime deadlineDateTime) {
         super(description);
-        this.by = by;
+        this.deadlineDateTime = deadlineDateTime;
         this.includesTime = true;
-        this.legacyBy = null;
+        this.legacyDeadline = null;
     }
 
     /**
@@ -64,8 +64,8 @@ public class Deadline extends Task {
      * @return the deadline as a {@link LocalDateTime}, or {@code null} for an
      *         old free-form value that could not be parsed.
      */
-    public LocalDateTime getBy() {
-        return by;
+    public LocalDateTime getDeadlineDateTime() {
+        return deadlineDateTime;
     }
 
     /**
@@ -73,11 +73,11 @@ public class Deadline extends Task {
      *
      * @return a formatted date/time, or the old free-form value.
      */
-    public String getDisplayBy() {
-        if (legacyBy != null) {
-            return legacyBy;
+    public String getDisplayDeadline() {
+        if (legacyDeadline != null) {
+            return legacyDeadline;
         }
-        return DateTimeParser.format(new DateTimeParser.ParsedDateTime(by, includesTime));
+        return DateTimeParser.format(new DateTimeParser.ParsedDateTime(deadlineDateTime, includesTime));
     }
 
     /**
@@ -85,11 +85,11 @@ public class Deadline extends Task {
      *
      * @return an ISO date/time, or the old free-form value.
      */
-    public String getStoredBy() {
-        if (legacyBy != null) {
-            return legacyBy;
+    public String getStoredDeadline() {
+        if (legacyDeadline != null) {
+            return legacyDeadline;
         }
-        return DateTimeParser.serialize(new DateTimeParser.ParsedDateTime(by, includesTime));
+        return DateTimeParser.serialize(new DateTimeParser.ParsedDateTime(deadlineDateTime, includesTime));
     }
 
     /**
@@ -109,7 +109,41 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return super.toString() + " (by: " + getDisplayBy() + ")";
+        return super.toString() + " (by: " + getDisplayDeadline() + ")";
+    }
+
+    /**
+     * Returns the parsed deadline value using the legacy accessor name.
+     *
+     * @return the deadline as a {@link LocalDateTime}, or {@code null} for an
+     *         old free-form value.
+     * @deprecated Use {@link #getDeadlineDateTime()} instead.
+     */
+    @Deprecated
+    public LocalDateTime getBy() {
+        return getDeadlineDateTime();
+    }
+
+    /**
+     * Returns the deadline display value using the legacy accessor name.
+     *
+     * @return a formatted date/time, or the old free-form value.
+     * @deprecated Use {@link #getDisplayDeadline()} instead.
+     */
+    @Deprecated
+    public String getDisplayBy() {
+        return getDisplayDeadline();
+    }
+
+    /**
+     * Returns the deadline storage value using the legacy accessor name.
+     *
+     * @return an ISO date/time, or the old free-form value.
+     * @deprecated Use {@link #getStoredDeadline()} instead.
+     */
+    @Deprecated
+    public String getStoredBy() {
+        return getStoredDeadline();
     }
 
     /**

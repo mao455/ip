@@ -105,50 +105,52 @@ public final class Parser {
                 throw new BoException("A deadline needs a description and a /by date.");
             }
 
-            int byMarker = taskDetails.indexOf(" /by ");
-            if (byMarker < 0) {
+            int deadlineMarker = taskDetails.indexOf(" /by ");
+            if (deadlineMarker < 0) {
                 throw new BoException("A deadline must include a /by date, e.g. deadline return book /by Friday.");
             }
-            String description = taskDetails.substring(0, byMarker).strip();
-            String by = taskDetails.substring(byMarker + " /by ".length()).strip();
+            String description = taskDetails.substring(0, deadlineMarker).strip();
+            String deadlineDateTime = taskDetails.substring(
+                    deadlineMarker + " /by ".length()).strip();
             if (description.isEmpty()) {
                 throw new BoException("The description of a deadline cannot be empty.");
             }
-            if (by.isEmpty()) {
+            if (deadlineDateTime.isEmpty()) {
                 throw new BoException("The /by date of a deadline cannot be empty.");
             }
-            return new Deadline(description, by);
+            return new Deadline(description, deadlineDateTime);
         }
 
         if (taskDetails.isEmpty()) {
             throw new BoException("An event needs a description, a /from time, and a /to time.");
         }
 
-        int fromMarker = taskDetails.indexOf(" /from ");
-        int toMarker = taskDetails.indexOf(" /to ");
-        if (fromMarker < 0) {
+        int startMarker = taskDetails.indexOf(" /from ");
+        int endMarker = taskDetails.indexOf(" /to ");
+        if (startMarker < 0) {
             throw new BoException("An event must include a /from time.");
         }
-        if (toMarker < 0) {
+        if (endMarker < 0) {
             throw new BoException("An event must include a /to time.");
         }
-        if (toMarker < fromMarker) {
+        if (endMarker < startMarker) {
             throw new BoException("Please put the /from time before the /to time.");
         }
 
-        String description = taskDetails.substring(0, fromMarker).strip();
-        String from = taskDetails.substring(fromMarker + " /from ".length(), toMarker).strip();
-        String to = taskDetails.substring(toMarker + " /to ".length()).strip();
+        String description = taskDetails.substring(0, startMarker).strip();
+        String startDateTime = taskDetails.substring(
+                startMarker + " /from ".length(), endMarker).strip();
+        String endDateTime = taskDetails.substring(endMarker + " /to ".length()).strip();
         if (description.isEmpty()) {
             throw new BoException("The description of an event cannot be empty.");
         }
-        if (from.isEmpty()) {
+        if (startDateTime.isEmpty()) {
             throw new BoException("The /from time of an event cannot be empty.");
         }
-        if (to.isEmpty()) {
+        if (endDateTime.isEmpty()) {
             throw new BoException("The /to time of an event cannot be empty.");
         }
-        return new Event(description, from, to);
+        return new Event(description, startDateTime, endDateTime);
     }
 
     /** The categories of command that Bo can execute. */
