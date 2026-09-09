@@ -94,32 +94,47 @@ public final class Parser {
         String taskDetails = commandParts.length == 2 ? commandParts[1].strip() : "";
 
         if (commandName.equals("todo")) {
-            if (taskDetails.isEmpty()) {
-                throw new BoException("The description of a todo cannot be empty.");
-            }
-            return new Todo(taskDetails);
+            return createTodo(taskDetails);
         }
 
         if (commandName.equals("deadline")) {
-            if (taskDetails.isEmpty()) {
-                throw new BoException("A deadline needs a description and a /by date.");
-            }
-
-            int byMarker = taskDetails.indexOf(" /by ");
-            if (byMarker < 0) {
-                throw new BoException("A deadline must include a /by date, e.g. deadline return book /by Friday.");
-            }
-            String description = taskDetails.substring(0, byMarker).strip();
-            String by = taskDetails.substring(byMarker + " /by ".length()).strip();
-            if (description.isEmpty()) {
-                throw new BoException("The description of a deadline cannot be empty.");
-            }
-            if (by.isEmpty()) {
-                throw new BoException("The /by date of a deadline cannot be empty.");
-            }
-            return new Deadline(description, by);
+            return createDeadline(taskDetails);
         }
 
+        return createEvent(taskDetails);
+    }
+
+    /** Creates a todo from its command details. */
+    private static Todo createTodo(String taskDetails) throws BoException {
+        if (taskDetails.isEmpty()) {
+            throw new BoException("The description of a todo cannot be empty.");
+        }
+        return new Todo(taskDetails);
+    }
+
+    /** Creates a deadline from its command details. */
+    private static Deadline createDeadline(String taskDetails) throws BoException {
+        if (taskDetails.isEmpty()) {
+            throw new BoException("A deadline needs a description and a /by date.");
+        }
+
+        int byMarker = taskDetails.indexOf(" /by ");
+        if (byMarker < 0) {
+            throw new BoException("A deadline must include a /by date, e.g. deadline return book /by Friday.");
+        }
+        String description = taskDetails.substring(0, byMarker).strip();
+        String by = taskDetails.substring(byMarker + " /by ".length()).strip();
+        if (description.isEmpty()) {
+            throw new BoException("The description of a deadline cannot be empty.");
+        }
+        if (by.isEmpty()) {
+            throw new BoException("The /by date of a deadline cannot be empty.");
+        }
+        return new Deadline(description, by);
+    }
+
+    /** Creates an event from its command details. */
+    private static Event createEvent(String taskDetails) throws BoException {
         if (taskDetails.isEmpty()) {
             throw new BoException("An event needs a description, a /from time, and a /to time.");
         }

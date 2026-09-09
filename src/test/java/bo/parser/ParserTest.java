@@ -52,6 +52,8 @@ class ParserTest {
         Event event = assertInstanceOf(Event.class, eventCommand.task());
         assertAll(
                 () -> assertEquals(Parser.Type.ADD, todoCommand.type()),
+                () -> assertEquals(Parser.Type.ADD, deadlineCommand.type()),
+                () -> assertEquals(Parser.Type.ADD, eventCommand.type()),
                 () -> assertEquals("read book", todo.getDescription()),
                 () -> assertEquals("return book", deadline.getDescription()),
                 () -> assertEquals("Oct 15 2019", deadline.getDisplayBy()),
