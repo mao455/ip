@@ -71,6 +71,15 @@ class TaskListTest {
         assertArrayEquals(new Task[] {firstMatch, secondMatch}, matchingTasks);
     }
 
+    /** Verifies that finding a missing keyword returns an empty array. */
+    @Test
+    void find_keywordWithNoMatches_returnsEmptyArray() {
+        TaskList taskList = new TaskList();
+        taskList.add(new Todo("buy milk"));
+
+        assertArrayEquals(new Task[0], taskList.find("book"));
+    }
+
     /** Verifies that a full list rejects another task without changing its contents. */
     @Test
     void add_fullList_returnsFalseAndKeepsExistingTasks() {

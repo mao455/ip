@@ -128,17 +128,13 @@ public final class TaskList {
         }
 
         String normalizedKeyword = keyword.strip().toLowerCase(Locale.ROOT);
-        Task[] matchingTasks = new Task[taskCount];
-        int matchingTaskCount = 0;
-        for (int i = 0; i < taskCount; i++) {
-            String description = tasks[i].getDescription();
-            if (description != null
-                    && description.toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
-                matchingTasks[matchingTaskCount] = tasks[i];
-                matchingTaskCount++;
-            }
-        }
-        return Arrays.copyOf(matchingTasks, matchingTaskCount);
+        return Arrays.stream(tasks, 0, taskCount)
+                .filter(task -> {
+                    String description = task.getDescription();
+                    return description != null
+                            && description.toLowerCase(Locale.ROOT).contains(normalizedKeyword);
+                })
+                .toArray(Task[]::new);
     }
 
     /** Checks an index before accessing the backing array. */
