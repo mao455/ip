@@ -94,6 +94,11 @@ public class Bo {
         case FIND:
             ui.showMatchingTasks(taskList.find(parsedCommand.keyword()));
             return;
+        case SORT:
+            taskList.sortByDate();
+            saveTasks(taskList, ui);
+            ui.showSortedTaskList(taskList);
+            return;
         case ADD:
             Task task = parsedCommand.task();
             if (!taskList.add(task)) {

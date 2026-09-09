@@ -44,6 +44,12 @@ public final class Parser {
         if (commandName.equals("find")) {
             return new Command(Type.FIND, -1, null, parseKeyword(command));
         }
+        if (commandName.equals("sort")) {
+            if (!command.equals("sort")) {
+                throw new BoException("Please use sort without additional arguments.");
+            }
+            return new Command(Type.SORT, -1, null, null);
+        }
         if (commandName.equals("todo") || commandName.equals("deadline")
                 || commandName.equals("event")) {
             return new Command(Type.ADD, -1, createTask(command), null);
@@ -163,6 +169,8 @@ public final class Parser {
         UNMARK,
         /** Find tasks whose descriptions contain a keyword. */
         FIND,
+        /** Sort tasks by their relevant date. */
+        SORT,
         /** Add a newly created task. */
         ADD
     }

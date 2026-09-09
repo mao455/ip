@@ -443,3 +443,31 @@ Here are the matching tasks in your list:
 2.[D][ ] return book (by: Friday)
 Bye. Hope to see you again soon!
 ```
+
+## Test case 14: Sort tasks by date
+
+Aim: Verify that sort orders deadlines by date, events by start time, and keeps undated tasks last in their original relative order.
+
+### Input
+
+```text
+todo undated first
+deadline later deadline /by 2026-08-28
+event earlier event /from 2026-08-20 /to 2026-08-21
+deadline earlier deadline /by 2026-08-15
+todo undated second
+sort
+bye
+```
+
+### Expected output
+
+```text
+Here are your tasks sorted by date:
+1.[D][ ] earlier deadline (by: Aug 15 2026)
+2.[E][ ] earlier event (from: Aug 20 2026 to: Aug 21 2026)
+3.[D][ ] later deadline (by: Aug 28 2026)
+4.[T][ ] undated first
+5.[T][ ] undated second
+Bye. Hope to see you again soon!
+```

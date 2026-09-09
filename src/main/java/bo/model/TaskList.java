@@ -1,6 +1,8 @@
 package bo.model;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Locale;
 
 /**
@@ -139,6 +141,30 @@ public final class TaskList {
             }
         }
         return Arrays.copyOf(matchingTasks, matchingTaskCount);
+    }
+
+    /**
+     * Sorts tasks by their relevant date in ascending order.
+     *
+     * <p>Deadlines use their deadline, events use their start time, and tasks
+     * without a typed date are placed last. Tasks with equal sort dates retain
+     * their original relative order.</p>
+     */
+    public void sortByDate() {
+        Arrays.sort(tasks, 0, taskCount,
+                Comparator.comparing(TaskList::getSortDate,
+                        Comparator.nullsLast(Comparator.naturalOrder())));
+    }
+
+    /** Returns the date used to order a task, or {@code null} when it has none. */
+    private static LocalDateTime getSortDate(Task task) {
+        if (task instanceof Deadline deadline) {
+            return deadline.getBy();
+        }
+        if (task instanceof Event event) {
+            return event.getFrom();
+        }
+        return null;
     }
 
     /** Checks an index before accessing the backing array. */

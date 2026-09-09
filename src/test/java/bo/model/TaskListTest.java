@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +70,28 @@ class TaskListTest {
         Task[] matchingTasks = taskList.find("BOOK");
 
         assertArrayEquals(new Task[] {firstMatch, secondMatch}, matchingTasks);
+    }
+
+    /** Verifies chronological ordering across task types and stable undated ordering. */
+    @Test
+    void sortByDate_mixedTasks_placesUndatedTasksLast() {
+        Task undated = new Todo("undated");
+        Task laterDeadline = new Deadline("later deadline", LocalDate.of(2026, 8, 28));
+        Task event = new Event("event", LocalDateTime.of(2026, 8, 20, 9, 0),
+                LocalDateTime.of(2026, 8, 20, 10, 0));
+        Task earlierDeadline = new Deadline("earlier deadline", LocalDate.of(2026, 8, 15));
+        Task legacyUndated = new Deadline("legacy undated", "Friday");
+        TaskList taskList = new TaskList();
+        taskList.add(undated);
+        taskList.add(laterDeadline);
+        taskList.add(event);
+        taskList.add(earlierDeadline);
+        taskList.add(legacyUndated);
+
+        taskList.sortByDate();
+
+        assertArrayEquals(new Task[] {earlierDeadline, event, laterDeadline,
+                undated, legacyUndated}, taskList.toArray());
     }
 
     /** Verifies that a full list rejects another task without changing its contents. */

@@ -106,7 +106,17 @@ public final class Ui {
      * @param taskList the tasks to display.
      */
     public void showTaskList(TaskList taskList) {
-        System.out.println(" Here are the tasks in your list:");
+        showTasks(" Here are the tasks in your list:", taskList);
+    }
+
+    /** Shows all tasks after a date-based sort. */
+    public void showSortedTaskList(TaskList taskList) {
+        showTasks(" Here are your tasks sorted by date:", taskList);
+    }
+
+    /** Shows tasks under the given heading in their current list order. */
+    private void showTasks(String heading, TaskList taskList) {
+        System.out.println(heading);
         for (int i = 0; i < taskList.size(); i++) {
             System.out.println(" " + (i + 1) + "." + taskList.get(i));
         }

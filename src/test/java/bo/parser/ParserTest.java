@@ -72,6 +72,18 @@ class ParserTest {
                 () -> assertEquals("book shelf", command.keyword()));
     }
 
+    /** Verifies that sort accepts no arguments and creates a sort command. */
+    @Test
+    void parse_sortCommand_returnsSortCommand() throws BoException {
+        Parser.Command command = parser.parse("sort");
+
+        assertAll(
+                () -> assertEquals(Parser.Type.SORT, command.type()),
+                () -> assertEquals(-1, command.taskIndex()),
+                () -> assertNull(command.task()),
+                () -> assertNull(command.keyword()));
+    }
+
     /** Verifies that malformed commands return the documented user-facing errors. */
     @Test
     void parse_invalidCommands_throwsExpectedErrors() {
@@ -81,6 +93,7 @@ class ParserTest {
                 () -> assertParsingFails("delete", "Please use delete followed by one task number, e.g. delete 1."),
                 () -> assertParsingFails("mark abc", "The task number must be a whole number."),
                 () -> assertParsingFails("find", "Please use find followed by a keyword, e.g. find book."),
+                () -> assertParsingFails("sort date", "Please use sort without additional arguments."),
                 () -> assertParsingFails("todo", "The description of a todo cannot be empty."),
                 () -> assertParsingFails("deadline return book",
                         "A deadline must include a /by date, e.g. deadline return book /by Friday."),

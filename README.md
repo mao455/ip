@@ -63,6 +63,17 @@ java -jar build/libs/duke.jar
 Bo then accepts commands through the terminal. For example, enter `list` to
 display saved tasks or `bye` to exit.
 
+To view tasks in chronological order, enter:
+
+```text
+sort
+```
+
+Deadlines are ordered by their `by` date and events by their `from` date.
+Todos and tasks with legacy free-form dates are treated as undated, so they
+appear after dated tasks while retaining their original relative order. The
+`sort` command takes no arguments and saves the reordered task list.
+
 On Windows, use `gradlew.bat shadowJar` and
 `java -jar build\\libs\\duke.jar` instead. If you want to force a clean
 rebuild, run `./gradlew clean shadowJar` before running the JAR.
