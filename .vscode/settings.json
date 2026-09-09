@@ -1,0 +1,6 @@
+{
+    "code-runner.executorMap": {
+        "java": "cd \"$workspaceRoot\" && ./gradlew run"
+    },
+    "code-runner.runInTerminal": true
+}

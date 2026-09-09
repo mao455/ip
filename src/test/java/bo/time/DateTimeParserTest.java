@@ -91,6 +91,13 @@ class DateTimeParserTest {
         assertEquals("2019-10-15T09:05:30", DateTimeParser.serialize(parsed));
     }
 
+    /** Verifies that a parsed date/time cannot be created without a value. */
+    @Test
+    void parsedDateTime_nullValue_assertionFails() {
+        assertThrows(AssertionError.class,
+                () -> new DateTimeParser.ParsedDateTime(null, false));
+    }
+
     /** Asserts both the parsed value and whether the input included a time. */
     private static void assertParsed(String input, LocalDateTime expectedValue, boolean expectedIncludesTime) {
         DateTimeParser.ParsedDateTime parsed = DateTimeParser.parse(input);

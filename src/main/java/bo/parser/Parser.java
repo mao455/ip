@@ -125,6 +125,8 @@ public final class Parser {
             throw new BoException("An event needs a description, a /from time, and a /to time.");
         }
 
+        assert commandName.equals("event")
+                : "createTask should only receive todo, deadline, or event commands.";
         int startMarker = taskDetails.indexOf(" /from ");
         int endMarker = taskDetails.indexOf(" /to ");
         if (startMarker < 0) {

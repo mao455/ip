@@ -36,6 +36,9 @@ public final class TaskList {
         }
         this.tasks = Arrays.copyOf(initialTasks, initialTasks.length);
         this.taskCount = initialTaskCount;
+        for (int i = 0; i < taskCount; i++) {
+            assert tasks[i] != null : "Occupied task slots must contain a task.";
+        }
     }
 
     /**
@@ -69,6 +72,7 @@ public final class TaskList {
         if (isFull()) {
             return false;
         }
+        assert taskCount < tasks.length : "A non-full task list must have an available slot.";
         tasks[taskCount] = task;
         taskCount++;
         return true;
@@ -96,6 +100,7 @@ public final class TaskList {
     public Task remove(int index) {
         checkIndex(index);
         Task removedTask = tasks[index];
+        assert removedTask != null : "An occupied task slot must contain a task.";
         int tasksToShift = taskCount - index - 1;
         if (tasksToShift > 0) {
             System.arraycopy(tasks, index + 1, tasks, index, tasksToShift);

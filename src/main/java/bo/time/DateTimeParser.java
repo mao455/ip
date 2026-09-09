@@ -125,5 +125,9 @@ public final class DateTimeParser {
      * @param includesTime whether the original input included an explicit time.
      */
     public record ParsedDateTime(LocalDateTime value, boolean includesTime) {
+        /** Ensures a parsed date/time always contains a concrete value. */
+        public ParsedDateTime {
+            assert value != null : "A parsed date/time must have a value.";
+        }
     }
 }

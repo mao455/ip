@@ -101,4 +101,10 @@ class TaskListTest {
                 () -> assertThrows(IndexOutOfBoundsException.class, () -> new TaskList().get(0)),
                 () -> assertThrows(IndexOutOfBoundsException.class, () -> new TaskList().remove(-1)));
     }
+
+    /** Verifies that an occupied task-list slot cannot be null. */
+    @Test
+    void constructor_nullOccupiedSlot_assertionFails() {
+        assertThrows(AssertionError.class, () -> new TaskList(new Task[] {null}, 1));
+    }
 }
