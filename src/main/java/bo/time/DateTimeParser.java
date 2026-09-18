@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Parses and formats the date and time values used by deadline and event tasks.
@@ -35,6 +36,12 @@ public final class DateTimeParser {
     /** Formatter used to persist a date-only value. */
     private static final DateTimeFormatter STORAGE_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
 
+    /** Matches values that look like one of Bo's structured date/time formats. */
+    private static final Pattern STRUCTURED_DATE_TIME = Pattern.compile(
+            "^(?:\\d{1,2}/\\d{1,2}/\\d{4}(?:\\s+\\d{4})?"
+                    + "|\\d{4}-\\d{1,2}-\\d{1,2}"
+                    + "(?:(?:\\s+|T)\\d{1,2}:?\\d{2}(?::\\d{2})?)?)$");
+
     private DateTimeParser() {
         // Utility class; do not instantiate.
     }
@@ -55,7 +62,7 @@ public final class DateTimeParser {
             throw new IllegalArgumentException("A date or time cannot be blank.");
         }
 
-        String value = input.strip();
+        String value = input.strip().replaceAll("\\s+", " ");
         for (DateTimeFormatter dateTimeFormatter : List.of(
                 SLASH_DATE_TIME,
                 ISO_COMPACT_DATE_TIME,
@@ -79,6 +86,21 @@ public final class DateTimeParser {
         }
 
         throw new IllegalArgumentException("Unsupported date/time format: " + input);
+    }
+
+    /**
+     * Returns whether a value appears to be a structured date/time rather than
+     * a legacy free-form value such as {@code Friday}.
+     *
+     * <p>This distinction lets Bo continue displaying old free-form values
+     * while rejecting malformed values that clearly intend a numeric date or
+     * time format.</p>
+     *
+     * @param input the value to inspect.
+     * @return {@code true} when the value resembles a structured format.
+     */
+    public static boolean looksLikeStructuredDateTime(String input) {
+        return input != null && STRUCTURED_DATE_TIME.matcher(input.strip()).matches();
     }
 
     /**

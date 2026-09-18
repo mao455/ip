@@ -45,6 +45,7 @@ class StorageTest {
     @AfterEach
     void restoreStorageFile() throws IOException {
         if (fileExisted) {
+            Files.deleteIfExists(taskFile);
             Files.write(taskFile, originalContents);
         } else {
             Files.deleteIfExists(taskFile);
@@ -102,6 +103,22 @@ class StorageTest {
                 () -> assertEquals("valid event", loaded[2].getDescription()));
     }
 
+    /** Verifies that impossible typed dates and event ranges are skipped as malformed records. */
+    @Test
+    void loadWithReport_invalidTypedDates_skipsInvalidLines() throws IOException {
+        writeStorage("D | 0 | impossible date | 2019-02-29\n"
+                + "E | 0 | reversed event | 2019-10-16T10:00:00 | 2019-10-16T09:00:00\n"
+                + "T | 0 | valid todo\n");
+
+        Task[] loaded = new Task[3];
+        Storage.LoadResult result = Storage.loadWithReport(loaded);
+
+        assertAll(
+                () -> assertEquals(1, result.getTaskCount()),
+                () -> assertEquals(2, result.getInvalidLineCount()),
+                () -> assertEquals("valid todo", loaded[0].getDescription()));
+    }
+
     /** Verifies that valid records beyond the supplied array capacity are reported. */
     @Test
     void loadWithReport_moreRecordsThanCapacity_reportsExcessRecords() throws IOException {
@@ -131,6 +148,14 @@ class StorageTest {
                 () -> assertEquals(0, result.getExcessTaskCount()),
                 () -> assertNull(loaded[0]),
                 () -> assertNull(loaded[1]));
+    }
+
+    /** Verifies that a storage path that cannot be opened as a file reports an I/O error. */
+    @Test
+    void loadWithReport_storagePathIsDirectory_throwsIoException() throws IOException {
+        Files.createDirectory(taskFile);
+
+        assertThrows(IOException.class, () -> Storage.loadWithReport(new Task[1]));
     }
 
     /** Verifies that save rejects invalid arrays, counts, and task descriptions. */

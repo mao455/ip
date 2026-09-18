@@ -471,3 +471,31 @@ Here are your tasks sorted by date:
 5.[T][ ] undated second
 Bye. Hope to see you again soon!
 ```
+
+## Test case 15: Handle whitespace, impossible dates, and duplicate parameters
+
+Aim: Verify that harmless whitespace is normalized and malformed structured dates or duplicate parameters are rejected without terminating Bo.
+
+### Input
+
+```text
+  todo   read   book
+deadline invalid date /by 2019-02-29
+deadline duplicate /by Friday /by Monday
+event reversed /from 2019-10-16 1000 /to 2019-10-16 0900
+list
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] read book
+OOPS!!! The /by date of a deadline is invalid. Please use a valid date or time.
+OOPS!!! A deadline can include only one /by date.
+OOPS!!! The /from time of an event must be before its /to time.
+Here are the tasks in your list:
+1.[T][ ] read book
+Bye. Hope to see you again soon!
+```

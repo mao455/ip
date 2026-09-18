@@ -26,6 +26,9 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) {
         super(description);
+        if (by == null || by.isBlank()) {
+            throw new IllegalArgumentException("A deadline must have a non-blank date.");
+        }
         DateTimeParser.ParsedDateTime parsed = tryParse(by);
         this.by = parsed == null ? null : parsed.value();
         this.includesTime = parsed != null && parsed.includesTime();
@@ -123,6 +126,9 @@ public class Deadline extends Task {
         try {
             return DateTimeParser.parse(value);
         } catch (IllegalArgumentException exception) {
+            if (DateTimeParser.looksLikeStructuredDateTime(value)) {
+                throw exception;
+            }
             return null;
         }
     }

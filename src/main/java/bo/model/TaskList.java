@@ -36,6 +36,11 @@ public final class TaskList {
                 || initialTaskCount > initialTasks.length) {
             throw new IllegalArgumentException("The initial tasks are invalid.");
         }
+        for (int i = 0; i < initialTaskCount; i++) {
+            if (initialTasks[i] == null) {
+                throw new IllegalArgumentException("The initial tasks cannot contain null entries.");
+            }
+        }
         this.tasks = Arrays.copyOf(initialTasks, initialTasks.length);
         this.taskCount = initialTaskCount;
     }

@@ -32,6 +32,14 @@ class DateTimeParserTest {
         assertFalse(parsed.includesTime());
     }
 
+    /** Verifies that repeated spaces inside a date/time are treated as separators. */
+    @Test
+    void parse_inputWithRepeatedInternalWhitespace_normalizesBeforeParsing() {
+        DateTimeParser.ParsedDateTime parsed = DateTimeParser.parse("2/12/2019    1800");
+
+        assertEquals(LocalDateTime.of(2019, 12, 2, 18, 0), parsed.value());
+    }
+
     /** Verifies that null, empty, and whitespace-only input is rejected. */
     @Test
     void parse_blankInput_exceptionThrown() {

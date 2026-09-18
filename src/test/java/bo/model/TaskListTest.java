@@ -119,6 +119,8 @@ class TaskListTest {
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList(null, 0)),
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList(new Task[1], -1)),
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList(new Task[1], 2)),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new TaskList(new Task[] {null}, 1)),
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList().add(null)),
                 () -> assertThrows(IllegalArgumentException.class, () -> new TaskList().find(" ")),
                 () -> assertThrows(IndexOutOfBoundsException.class, () -> new TaskList().get(0)),

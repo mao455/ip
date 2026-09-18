@@ -36,6 +36,9 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) {
         super(description);
+        if (from == null || from.isBlank() || to == null || to.isBlank()) {
+            throw new IllegalArgumentException("An event must have non-blank times.");
+        }
         DateTimeParser.ParsedDateTime parsedFrom = tryParse(from);
         DateTimeParser.ParsedDateTime parsedTo = tryParse(to);
         this.from = parsedFrom == null ? null : parsedFrom.value();
@@ -44,6 +47,7 @@ public class Event extends Task {
         this.includesToTime = parsedTo != null && parsedTo.includesTime();
         this.legacyFrom = parsedFrom == null ? from : null;
         this.legacyTo = parsedTo == null ? to : null;
+        validateRange(this.from, this.to);
     }
 
     /**
@@ -55,12 +59,16 @@ public class Event extends Task {
      */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("An event must have non-null dates.");
+        }
         this.from = from.atStartOfDay();
         this.to = to.atStartOfDay();
         this.includesFromTime = false;
         this.includesToTime = false;
         this.legacyFrom = null;
         this.legacyTo = null;
+        validateRange(this.from, this.to);
     }
 
     /**
@@ -72,12 +80,16 @@ public class Event extends Task {
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("An event must have non-null date/times.");
+        }
         this.from = from;
         this.to = to;
         this.includesFromTime = true;
         this.includesToTime = true;
         this.legacyFrom = null;
         this.legacyTo = null;
+        validateRange(this.from, this.to);
     }
 
     /**
@@ -179,7 +191,17 @@ public class Event extends Task {
         try {
             return DateTimeParser.parse(value);
         } catch (IllegalArgumentException exception) {
+            if (DateTimeParser.looksLikeStructuredDateTime(value)) {
+                throw exception;
+            }
             return null;
+        }
+    }
+
+    /** Checks that typed event times form a strictly increasing interval. */
+    private static void validateRange(LocalDateTime from, LocalDateTime to) {
+        if (from != null && to != null && !from.isBefore(to)) {
+            throw new IllegalArgumentException("An event must start before it ends.");
         }
     }
 }

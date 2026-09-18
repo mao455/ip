@@ -43,8 +43,7 @@ public final class Storage {
      * every launch mode. The compiled class location is checked as a fallback,
      * which supports launching Bo while the working directory is elsewhere.
      *
-     * @return the absolute project root directory named {@code ip}.
-     * @throws IllegalStateException if the project root cannot be found.
+     * @return the absolute project root, or the current directory as a safe fallback.
      */
     private static Path resolveProjectRoot() {
         Path projectRoot = findProjectRoot(Path.of("").toAbsolutePath());
@@ -62,10 +61,10 @@ public final class Storage {
                 }
             }
         } catch (URISyntaxException | SecurityException exception) {
-            throw new IllegalStateException("Unable to locate the project root.", exception);
+            // Use the working directory below when the code location is unavailable.
         }
 
-        throw new IllegalStateException("Unable to locate the project root named 'ip'.");
+        return Path.of("").toAbsolutePath().normalize();
     }
 
     /**

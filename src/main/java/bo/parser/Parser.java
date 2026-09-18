@@ -5,6 +5,7 @@ import bo.model.Deadline;
 import bo.model.Event;
 import bo.model.Task;
 import bo.model.Todo;
+import bo.time.DateTimeParser;
 
 /**
  * Interprets user input and turns it into validated commands for Bo.
@@ -23,14 +24,18 @@ public final class Parser {
      * @throws BoException if the command or its arguments are invalid.
      */
     public Command parse(String command) throws BoException {
-        if (command.isEmpty()) {
+        if (command == null || command.isBlank()) {
             throw new BoException("Please enter a command instead of an empty line.");
         }
 
+        command = command.strip().replaceAll("\\s+", " ");
         String[] commandParts = command.split("\\s+", 2);
         String commandName = commandParts[0];
         if (command.equals("list")) {
             return new Command(Type.LIST, -1, null, null);
+        }
+        if (commandName.equals("list")) {
+            throw new BoException("Please use list without additional arguments.");
         }
         if (commandName.equals("delete")) {
             return new Command(Type.DELETE, parseTaskIndex(command, Type.DELETE), null, null);
@@ -78,7 +83,11 @@ public final class Parser {
         }
 
         try {
-            return Integer.parseInt(commandParts[1]) - 1;
+            int taskNumber = Integer.parseInt(commandParts[1]);
+            if (taskNumber <= 0) {
+                throw new BoException("The task number must be a positive whole number.");
+            }
+            return taskNumber - 1;
         } catch (NumberFormatException exception) {
             throw new BoException("The task number must be a whole number.");
         }
@@ -111,18 +120,22 @@ public final class Parser {
                 throw new BoException("A deadline needs a description and a /by date.");
             }
 
-            int byMarker = taskDetails.indexOf(" /by ");
-            if (byMarker < 0) {
+            String[] byParts = taskDetails.split(" /by ", -1);
+            if (byParts.length < 2) {
                 throw new BoException("A deadline must include a /by date, e.g. deadline return book /by Friday.");
             }
-            String description = taskDetails.substring(0, byMarker).strip();
-            String by = taskDetails.substring(byMarker + " /by ".length()).strip();
+            if (byParts.length > 2) {
+                throw new BoException("A deadline can include only one /by date.");
+            }
+            String description = byParts[0].strip();
+            String by = byParts[1].strip();
             if (description.isEmpty()) {
-                throw new BoException("The description of a deadline cannot be empty.");
+                throw new BoException("A deadline must include a /by date, e.g. deadline return book /by Friday.");
             }
             if (by.isEmpty()) {
                 throw new BoException("The /by date of a deadline cannot be empty.");
             }
+            validateDateTime(by, "The /by date of a deadline");
             return new Deadline(description, by);
         }
 
@@ -141,6 +154,12 @@ public final class Parser {
         if (toMarker < fromMarker) {
             throw new BoException("Please put the /from time before the /to time.");
         }
+        if (taskDetails.indexOf(" /from ", fromMarker + 1) >= 0) {
+            throw new BoException("An event can include only one /from time.");
+        }
+        if (taskDetails.indexOf(" /to ", toMarker + 1) >= 0) {
+            throw new BoException("An event can include only one /to time.");
+        }
 
         String description = taskDetails.substring(0, fromMarker).strip();
         String from = taskDetails.substring(fromMarker + " /from ".length(), toMarker).strip();
@@ -154,7 +173,28 @@ public final class Parser {
         if (to.isEmpty()) {
             throw new BoException("The /to time of an event cannot be empty.");
         }
+        DateTimeParser.ParsedDateTime parsedFrom = validateDateTime(from, "The /from time of an event");
+        DateTimeParser.ParsedDateTime parsedTo = validateDateTime(to, "The /to time of an event");
+        if (parsedFrom != null && parsedTo != null && !parsedFrom.value().isBefore(parsedTo.value())) {
+            throw new BoException("The /from time of an event must be before its /to time.");
+        }
         return new Event(description, from, to);
+    }
+
+    /**
+     * Validates a value when it clearly uses a structured date/time format.
+     * Legacy free-form values remain valid for backwards compatibility.
+     */
+    private static DateTimeParser.ParsedDateTime validateDateTime(String value, String fieldName)
+            throws BoException {
+        if (!DateTimeParser.looksLikeStructuredDateTime(value)) {
+            return null;
+        }
+        try {
+            return DateTimeParser.parse(value);
+        } catch (IllegalArgumentException exception) {
+            throw new BoException(fieldName + " is invalid. Please use a valid date or time.");
+        }
     }
 
     /** The categories of command that Bo can execute. */
