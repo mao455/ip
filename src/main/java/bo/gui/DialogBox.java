@@ -3,12 +3,9 @@ package bo.gui;
 import java.io.IOException;
 import java.util.Collections;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
@@ -61,9 +58,7 @@ public final class DialogBox extends HBox {
 
     /** Places the speaker label on the left side of the dialog. */
     private void flip() {
-        ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
-        Collections.reverse(children);
-        getChildren().setAll(children);
+        Collections.reverse(getChildren());
         setAlignment(Pos.TOP_LEFT);
     }
 }
