@@ -40,7 +40,7 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 The project uses the Shadow Gradle plugin to package the application and its
 runtime dependencies into one executable (fat) JAR. The configured entry point
-is `bo.Bo`, and the generated file is named `duke.jar`.
+is `bo.Bo`, and the generated file is named `bo.jar`.
 
 Run these commands from the project root:
 
@@ -51,13 +51,13 @@ Run these commands from the project root:
 The JAR is created at:
 
 ```text
-build/libs/duke.jar
+build/libs/bo.jar
 ```
 
 To run it, use Java 25 and execute:
 
 ```bash
-java -jar build/libs/duke.jar
+java -jar build/libs/bo.jar
 ```
 
 Bo then accepts commands through the terminal. For example, enter `list` to
@@ -75,5 +75,5 @@ appear after dated tasks while retaining their original relative order. The
 `sort` command takes no arguments and saves the reordered task list.
 
 On Windows, use `gradlew.bat shadowJar` and
-`java -jar build\\libs\\duke.jar` instead. If you want to force a clean
+`java -jar build\\libs\\bo.jar` instead. If you want to force a clean
 rebuild, run `./gradlew clean shadowJar` before running the JAR.
