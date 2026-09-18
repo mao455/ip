@@ -47,9 +47,9 @@ public final class MainWindow extends AnchorPane {
      */
     public void setBo(Bo bo) {
         this.bo = bo;
-        addBotDialog("Hello! I'm Bo.\nWhat can I do for you?");
+        addBoDialog("Hello! I'm Bo.\nWhat can I do for you?");
         if (!bo.getStartupWarning().isEmpty()) {
-            addBotDialog(bo.getStartupWarning());
+            addBoDialog(bo.getStartupWarning());
         }
     }
 
@@ -64,16 +64,16 @@ public final class MainWindow extends AnchorPane {
         addUserDialog(command);
         userInput.clear();
         if (command.equals("bye")) {
-            addBotDialog("Bye. Hope to see you again soon!");
+            addBoDialog("Bye. Hope to see you again soon!");
             userInput.setDisable(true);
             sendButton.setDisable(true);
             return;
         }
 
         try {
-            addBotDialog(bo.executeCommand(command));
+            addBoDialog(bo.executeCommand(command));
         } catch (BoException exception) {
-            addBotDialog("OOPS!!! " + exception.getMessage());
+            addBoDialog("OOPS!!! " + exception.getMessage());
         }
     }
 
@@ -82,8 +82,8 @@ public final class MainWindow extends AnchorPane {
         dialogContainer.getChildren().add(DialogBox.getUserDialog(message));
     }
 
-    /** Adds a Bo response to the conversation. */
-    private void addBotDialog(String message) {
+    /** Adds a response from Bo to the conversation. */
+    private void addBoDialog(String message) {
         dialogContainer.getChildren().add(DialogBox.getBoDialog(message));
     }
 }
