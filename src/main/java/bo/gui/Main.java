@@ -11,6 +11,12 @@ import javafx.stage.Stage;
 
 /** The JavaFX entry point for the Bo chatbot. */
 public final class Main extends Application {
+    /** The minimum width of the main window. */
+    private static final double MIN_WINDOW_WIDTH = 520.0;
+
+    /** The minimum height of the main window. */
+    private static final double MIN_WINDOW_HEIGHT = 640.0;
+
     /** The application logic shared with the command-line interface. */
     private final Bo bo = new Bo();
 
@@ -33,8 +39,8 @@ public final class Main extends Application {
 
             Scene scene = new Scene(root);
             stage.setTitle("Bo");
-            stage.setMinWidth(520.0);
-            stage.setMinHeight(640.0);
+            stage.setMinWidth(MIN_WINDOW_WIDTH);
+            stage.setMinHeight(MIN_WINDOW_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (IOException | RuntimeException exception) {
