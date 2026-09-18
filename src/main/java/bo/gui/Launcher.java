@@ -4,6 +4,7 @@ import javafx.application.Application;
 
 /** Launches Bo's JavaFX application. */
 public final class Launcher {
+    /** Prevents instantiation of this launcher utility class. */
     private Launcher() {
     }
 
